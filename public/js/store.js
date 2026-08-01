@@ -23,6 +23,7 @@ class Store {
       activeNoteId: null,
       isAiDrawerOpen: false,
       isCommandPaletteOpen: false,
+      isMobileSidebarOpen: false,
     };
     this.listeners = [];
     this.loadLocalCache();

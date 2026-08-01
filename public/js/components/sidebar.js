@@ -19,22 +19,28 @@ class SidebarComponent {
       { id: 'gps', label: 'Life GPS', icon: '<polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line>' },
     ];
 
+    const isMobileOpen = state.isMobileSidebarOpen;
+
     return `
-      <aside class="sidebar">
-        <div class="sidebar-header">
-          <a href="#" class="brand-logo" onclick="event.preventDefault(); window.store.setState({ currentView: 'dashboard' })">
+      <div class="sidebar-backdrop ${isMobileOpen ? 'open' : ''}" onclick="window.store.setState({ isMobileSidebarOpen: false })"></div>
+      <aside class="sidebar ${isMobileOpen ? 'mobile-open' : ''}">
+        <div class="sidebar-header" style="display: flex; align-items: center; justify-content: space-between;">
+          <a href="#" class="brand-logo" onclick="event.preventDefault(); window.store.setState({ currentView: 'dashboard', isMobileSidebarOpen: false })">
             <div class="brand-emblem">P</div>
             <div class="brand-text-lg">
               <span class="word-plan">PLAN</span><span class="word-ix">IX</span>
             </div>
           </a>
+          <button class="btn btn-icon sidebar-mobile-close" onclick="window.store.setState({ isMobileSidebarOpen: false })" aria-label="Close navigation">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
         </div>
 
         <nav class="sidebar-nav">
           <div class="nav-section-title text-helper" style="padding: 0 12px 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Workspace</div>
           ${navItems.map(item => `
             <a class="nav-item ${state.currentView === item.id ? 'active' : ''}" 
-               onclick="window.store.setState({ currentView: '${item.id}' })">
+               onclick="window.store.setState({ currentView: '${item.id}', isMobileSidebarOpen: false })">
               <span class="nav-icon">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${item.icon}</svg>
               </span>

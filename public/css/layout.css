@@ -113,6 +113,24 @@
   justify-content: space-between;
 }
 
+/* --- SIDEBAR BACKDROP FOR MOBILE --- */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.sidebar-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* --- RESPONSIVE BREAKPOINTS --- */
 @media (max-width: 1024px) {
   .grid-cols-3, .grid-cols-4 {
@@ -121,22 +139,28 @@
 }
 
 @media (max-width: 768px) {
+  .app-container, .main-content {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
   .content-wrapper {
-    padding: var(--spacing-6) var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-4) 96px var(--spacing-4);
   }
   
   .view-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-4);
+    gap: var(--spacing-3);
   }
 
-  .grid-cols-2 {
+  .grid-cols-2, .grid-cols-3, .grid-cols-4 {
     grid-template-columns: 1fr;
   }
   
   .sidebar {
     transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
   }
   .sidebar.mobile-open {
     transform: translateX(0);
@@ -144,5 +168,11 @@
   .main-content {
     margin-left: 0;
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-wrapper {
+    padding: var(--spacing-3) var(--spacing-3) 92px var(--spacing-3);
   }
 }
