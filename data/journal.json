@@ -1,0 +1,27 @@
+[
+  {
+    "id": "jrn_1785555594875_wsgo",
+    "date": "2026-08-01",
+    "mood": "Excited",
+    "moodScore": 5,
+    "entryText": "SDTFWEFGVSDFSDG WREGWERGT",
+    "aiReflection": "🌟 Consistent reflection builds emotional resilience. Keep recording daily wins!",
+    "createdAt": "2026-08-01T03:39:54.875Z"
+  },
+  {
+    "id": "jnl_001",
+    "mood": "Excited",
+    "moodScore": 5,
+    "entryText": "Finalized the core architecture for the Planix client OS. All 14 views are performing seamlessly with zero latency. Feeling accomplished and ready for deployment!",
+    "aiReflection": "🌟 **AI Insight**: Peak motivation detected. High alignment between daily focus hours and weekly goals.",
+    "date": "2026-08-01"
+  },
+  {
+    "id": "jnl_002",
+    "mood": "Peaceful",
+    "moodScore": 4,
+    "entryText": "Completed morning workout and deep work coding sprint. Maintained calm focus throughout the day.",
+    "aiReflection": "💡 **AI Insight**: Consistency score reached 96%. Morning workouts correlate strongly with afternoon cognitive output.",
+    "date": "2026-07-31"
+  }
+]

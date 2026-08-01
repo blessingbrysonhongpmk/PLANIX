@@ -1,0 +1,16 @@
+{
+  "goals": [
+    "Deploy Planix Enterprise Client Architecture",
+    "Maintain 95%+ Habit Consistency Score",
+    "Complete 100 Active Recall Flashcards"
+  ],
+  "preferences": {
+    "focusTime": "morning",
+    "studyFormat": "flashcards",
+    "theme": "red-white-dark"
+  },
+  "insights": [
+    "Peak focus velocity occurs between 8:00 AM and 11:00 AM",
+    "Deep work sprints over 90 minutes increase total completion rate by 40%"
+  ]
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "hbt_001",
+    "title": "Deep Work 90-Min Focus Sprint",
+    "category": "work",
+    "frequency": "daily",
+    "streak": 14,
+    "completionHistory": {
+      "2026-07-25": true,
+      "2026-07-26": true,
+      "2026-07-27": true,
+      "2026-07-28": true,
+      "2026-07-29": true,
+      "2026-07-30": true,
+      "2026-07-31": true,
+      "2026-08-01": true
+    },
+    "createdAt": "2026-07-01T08:00:00.000Z"
+  },
+  {
+    "id": "hbt_002",
+    "title": "Morning Workout & Stretching Flow",
+    "category": "health",
+    "frequency": "daily",
+    "streak": 8,
+    "completionHistory": {
+      "2026-07-27": true,
+      "2026-07-28": true,
+      "2026-07-29": true,
+      "2026-07-30": true,
+      "2026-07-31": true,
+      "2026-08-01": true
+    },
+    "createdAt": "2026-07-01T08:00:00.000Z"
+  },
+  {
+    "id": "hbt_003",
+    "title": "Read 20 Pages of Tech / Leadership Book",
+    "category": "study",
+    "frequency": "daily",
+    "streak": 12,
+    "completionHistory": {
+      "2026-07-26": true,
+      "2026-07-27": true,
+      "2026-07-28": true,
+      "2026-07-29": true,
+      "2026-07-30": true,
+      "2026-07-31": true,
+      "2026-08-01": true
+    },
+    "createdAt": "2026-07-01T08:00:00.000Z"
+  },
+  {
+    "id": "hbt_004",
+    "title": "Evening Reflection & Gratitude Log",
+    "category": "personal",
+    "frequency": "daily",
+    "streak": 21,
+    "completionHistory": {
+      "2026-07-28": true,
+      "2026-07-29": true,
+      "2026-07-30": true,
+      "2026-07-31": true,
+      "2026-08-01": true
+    },
+    "createdAt": "2026-07-01T08:00:00.000Z"
+  }
+]

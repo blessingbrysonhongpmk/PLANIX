@@ -1,0 +1,58 @@
+[
+  {
+    "id": "note_001",
+    "title": "System Architecture & API Specs",
+    "content": "# PLANIX System Architecture\n\n## Core Principles\n- **Client-Side SPA Speed**: Zero page reloads with reactive store and modular views.\n- **REST API Contract**: Clean separation between server routes, storage layer, and UI state.\n- **Multi-AI Engine**: Automatic fallback to local NLP when external keys are unconfigured.\n\n```json\n{\n  \"status\": \"production-ready\",\n  \"theme\": \"Red & White Classic\"\n}\n```",
+    "folder": "Architecture",
+    "tags": [
+      "architecture",
+      "api",
+      "design"
+    ],
+    "isPinned": true,
+    "isArchived": false,
+    "audioUrl": null,
+    "versions": [
+      {
+        "timestamp": "2026-08-01T08:00:00.000Z",
+        "title": "System Architecture & API Specs",
+        "content": "# PLANIX System Architecture\n\nInitial architecture draft approved."
+      }
+    ],
+    "createdAt": "2026-07-25T10:00:00.000Z",
+    "updatedAt": "2026-08-01T08:30:00.000Z"
+  },
+  {
+    "id": "note_002",
+    "title": "AI & Vector Memory Search Notes",
+    "content": "# AI Vector Memory Search\n\n## Overview\nSemantic memory graph maps user concepts across tasks, notes, habits, and journals.\n\n### Key Algorithmic Components\n1. **Keyword Heuristic Extractor**: Fast local indexing.\n2. **Relevance Scoring**: Weighted match across title, tag, and content vectors.\n3. **Contextual Synthesizer**: Connects past learning blocks with active goals.",
+    "folder": "AI & ML",
+    "tags": [
+      "ai",
+      "search",
+      "memory"
+    ],
+    "isPinned": true,
+    "isArchived": false,
+    "audioUrl": null,
+    "versions": [],
+    "createdAt": "2026-07-28T14:20:00.000Z",
+    "updatedAt": "2026-07-30T16:45:00.000Z"
+  },
+  {
+    "id": "note_003",
+    "title": "Client Launch Strategy & Milestones",
+    "content": "# Client Project Launch Checklist\n\n- [x] UI/UX Polish (Red & White Theme)\n- [x] Data Pre-seeding & Thread-Safe JSON Store\n- [x] Security Headers & Environment Setup\n- [x] API Documentation & Deployment Manual",
+    "folder": "Productivity",
+    "tags": [
+      "launch",
+      "roadmap"
+    ],
+    "isPinned": false,
+    "isArchived": false,
+    "audioUrl": null,
+    "versions": [],
+    "createdAt": "2026-07-29T09:15:00.000Z",
+    "updatedAt": "2026-08-01T07:10:00.000Z"
+  }
+]
