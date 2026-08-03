@@ -1,7 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    PLANIX DESIGN SYSTEM - TOKENS
-   Core foundational values: Matte Black, Electric Blue, Electric Purple
-   Apple Polish • Linear Productivity • Raycast Speed • Arc Smoothness
+   Core Foundational Values: Signature Crimson Red & Obsidian Matte Dark Theme
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
@@ -20,57 +19,56 @@
 
   /* --- COLOR SYSTEM --- */
   /* Backgrounds */
-  --bg-primary: #09090B;      /* Matte Black */
-  --bg-secondary: #121215;    /* Dark Obsidian Container */
-  --bg-surface: #121215;      /* Surface Container */
-  --bg-card: #18181B;         /* Charcoal Dark Card Surface */
-  --bg-card-hover: #222226;   /* Card Hover State */
-  --bg-input: #141417;        /* Form Control Input */
-  --bg-input-focus: #1A1A1E;  /* Input Focus State */
-  --bg-modal: #121215;        /* Backdrop Modal Card */
-  --bg-hover: #1F1F23;        /* Generic Hover */
-  --bg-selected: rgba(59, 130, 246, 0.15); /* Selected Nav Item */
+  --bg-primary: #0A0A0C;      /* Deep Matte Obsidian/Black */
+  --bg-secondary: #141417;    /* Dark Graphite */
+  --bg-surface: #141417;      /* Surface Container */
+  --bg-card: #1C1C21;         /* Charcoal Card Surface */
+  --bg-card-hover: #26262D;   /* Hover State */
+  --bg-input: #151518;        /* Form Control Input */
+  --bg-input-focus: #1F1F24;  /* Input Focus State */
+  --bg-modal: #141417;        /* Backdrop Modal Card */
+  --bg-hover: #24242A;        /* Generic Hover */
+  --bg-selected: rgba(229, 9, 20, 0.15); /* Selected Nav Item */
 
   /* Text */
   --text-primary: #FFFFFF;    /* Pure White */
   --text-secondary: #A1A1AA;  /* Cool Gray */
   --text-tertiary: #71717A;   /* Muted Slate */
-  --text-inverse: #09090B;
+  --text-inverse: #0A0A0C;
 
-  /* Signature Electric Palette */
-  --accent-blue: #3B82F6;     /* Electric Blue */
-  --accent-blue-hover: #2563EB;
-  --accent-purple: #8B5CF6;   /* Electric Purple */
-  --accent-purple-hover: #7C3AED;
-  
-  --accent-primary: #3B82F6;  /* Electric Blue Primary */
-  --accent-primary-hover: #2563EB;
-  --accent-secondary: #8B5CF6;/* Electric Purple Secondary */
-  --accent-secondary-hover: #7C3AED;
+  /* Signature Crimson Red & Gold Palette */
+  --accent-red: #E50914;      /* Signature Vivid Red */
+  --accent-red-hover: #FF1E27;
+  --accent-primary: #E50914;  /* Deep Crimson Red Primary */
+  --accent-primary-hover: #FF1E27;
+  --accent-secondary: #F5B700;/* Warm Gold Secondary */
+  --accent-secondary-hover: #FFC933;
 
   /* Additional Multi-tone Accents */
-  --accent-gold: #F59E0B;
+  --accent-gold: #F5B700;
   --accent-emerald: #10B981;
-  --accent-cyan: #06B6D4;
+  --accent-indigo: #6366F1;
+  --accent-purple: #8B5CF6;
   --accent-rose: #F43F5E;
   --accent-amber: #F59E0B;
+  --accent-cyan: #06B6D4;
 
   /* Gradients */
-  --accent-gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-  --accent-gradient-blue: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
-  --accent-gradient-purple: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+  --accent-gradient-red: linear-gradient(135deg, #E50914 0%, #B91C2D 100%);
+  --accent-gradient-primary: linear-gradient(135deg, #E50914 0%, #B91C2D 100%);
+  --accent-gradient-gold: linear-gradient(135deg, #F5B700 0%, #D97706 100%);
   --accent-gradient-emerald: linear-gradient(135deg, #10B981 0%, #059669 100%);
 
   /* Semantics */
   --color-success: #10B981;
-  --color-warning: #F59E0B;
-  --color-danger: #EF4444;
+  --color-warning: #F5B700;
+  --color-danger: #E50914;
   --color-info: #3B82F6;
 
-  /* Thin Borders */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-medium: rgba(255, 255, 255, 0.16);
-  --border-focus: #3B82F6;
+  /* Borders */
+  --border-subtle: #27272A;
+  --border-medium: #3F3F46;
+  --border-focus: #E50914;
 
   /* --- TYPOGRAPHY SCALE --- */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -102,7 +100,7 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
   --shadow-lg: 0 16px 32px -4px rgba(0, 0, 0, 0.7);
-  --shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.35);
+  --shadow-focus: 0 0 0 3px rgba(229, 9, 20, 0.35);
 
   /* --- ANIMATIONS --- */
   --ease-natural: cubic-bezier(0.16, 1, 0.3, 1);

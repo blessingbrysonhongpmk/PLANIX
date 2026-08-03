@@ -1,6 +1,6 @@
 /**
  * PLANIX MAIN SPA APPLICATION ROUTER
- * Router for 16 Specialized Engineering & Productivity Views
+ * Crimson Red & Obsidian Dark Theme Router for 16 Specialized Engineering Views
  */
 
 class App {
@@ -50,9 +50,9 @@ class App {
               </button>
               
               <a href="#" class="mobile-brand-logo" onclick="event.preventDefault(); window.store.setState({ currentView: 'dashboard' })">
-                <span class="brand-emblem" style="width: 28px; height: 28px; font-size: 14px; background: linear-gradient(135deg, #3B82F6, #8B5CF6);">P</span>
+                <span class="brand-emblem" style="width: 28px; height: 28px; font-size: 14px; background: #E50914;">P</span>
                 <span class="brand-text-lg" style="font-size: 20px;">
-                  <span style="color: #FFF;">PLAN</span><span style="color: #3B82F6;">IX</span>
+                  <span style="color: #FFF;">PLAN</span><span style="color: #E50914;">IX</span>
                 </span>
               </a>
             </div>
@@ -64,11 +64,11 @@ class App {
             </div>
 
             <div class="topbar-actions" style="display: flex; gap: 10px; align-items: center;">
-              <button class="btn btn-secondary" style="background: #18181B; border-color: rgba(255,255,255,0.12); color: white;" title="Settings & Data Ownership" onclick="window.store.setState({ isSettingsModalOpen: true })">
+              <button class="btn btn-secondary" style="background: #1C1C21; border-color: #3F3F46; color: white;" title="Settings & Data Ownership" onclick="window.store.setState({ isSettingsModalOpen: true })">
                 <span>⚙️</span>
               </button>
 
-              <button class="btn btn-secondary btn-ai-toggle" style="background: #18181B; border-color: rgba(255,255,255,0.12); color: white;" onclick="window.store.setState({ isAiDrawerOpen: true })">
+              <button class="btn btn-secondary btn-ai-toggle" style="background: #1C1C21; border-color: #3F3F46; color: white;" onclick="window.store.setState({ isAiDrawerOpen: true })">
                 <span style="margin-right: 4px;">🤖</span>
                 <span class="btn-ai-label">AI Assistant</span>
               </button>
@@ -150,9 +150,9 @@ window.showToast = function(message, type = 'info') {
 
   const toast = document.createElement('div');
   toast.style.cssText = `
-    background: #18181B;
+    background: #1C1C21;
     color: white;
-    border: 1px solid ${type === 'success' ? '#10B981' : type === 'danger' ? '#EF4444' : '#3B82F6'};
+    border: 1px solid ${type === 'success' ? '#10B981' : type === 'danger' ? '#E50914' : '#E50914'};
     padding: 12px 18px;
     border-radius: 10px;
     font-size: 13px;
