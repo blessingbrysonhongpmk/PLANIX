@@ -1,6 +1,6 @@
 /**
  * PLANIX MAIN SPA APPLICATION ROUTER
- * Public PWA Ready, Settings Modal, Toast Notifications System
+ * Router for 16 Specialized Engineering & Productivity Views
  */
 
 class App {
@@ -50,25 +50,25 @@ class App {
               </button>
               
               <a href="#" class="mobile-brand-logo" onclick="event.preventDefault(); window.store.setState({ currentView: 'dashboard' })">
-                <span class="brand-emblem" style="width: 28px; height: 28px; font-size: 14px; background: #E50914;">P</span>
+                <span class="brand-emblem" style="width: 28px; height: 28px; font-size: 14px; background: linear-gradient(135deg, #3B82F6, #8B5CF6);">P</span>
                 <span class="brand-text-lg" style="font-size: 20px;">
-                  <span class="word-plan" style="color: #FFF;">PLAN</span><span class="word-ix" style="color: #E50914;">IX</span>
+                  <span style="color: #FFF;">PLAN</span><span style="color: #3B82F6;">IX</span>
                 </span>
               </a>
             </div>
 
             <div class="search-trigger" onclick="window.store.setState({ isCommandPaletteOpen: true })">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <span class="search-label">Search PLANIX...</span>
+              <span class="search-label">Search tasks, notes, coding topics, or commands...</span>
               <span class="kbd-shortcut">⌘K</span>
             </div>
 
             <div class="topbar-actions" style="display: flex; gap: 10px; align-items: center;">
-              <button class="btn btn-secondary" style="background: #1C1C21; border-color: #3F3F46; color: white;" title="Settings & Data Ownership" onclick="window.store.setState({ isSettingsModalOpen: true })">
+              <button class="btn btn-secondary" style="background: #18181B; border-color: rgba(255,255,255,0.12); color: white;" title="Settings & Data Ownership" onclick="window.store.setState({ isSettingsModalOpen: true })">
                 <span>⚙️</span>
               </button>
 
-              <button class="btn btn-secondary btn-ai-toggle" style="background: #1C1C21; border-color: #3F3F46; color: white;" onclick="window.store.setState({ isAiDrawerOpen: true })">
+              <button class="btn btn-secondary btn-ai-toggle" style="background: #18181B; border-color: rgba(255,255,255,0.12); color: white;" onclick="window.store.setState({ isAiDrawerOpen: true })">
                 <span style="margin-right: 4px;">🤖</span>
                 <span class="btn-ai-label">AI Assistant</span>
               </button>
@@ -91,9 +91,9 @@ class App {
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline></svg>
             <span>Tasks</span>
           </a>
-          <a class="mobile-nav-item ${state.currentView === 'habits' ? 'active' : ''}" onclick="window.store.setState({ currentView: 'habits' })">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-            <span>Habits</span>
+          <a class="mobile-nav-item ${state.currentView === 'engineering' ? 'active' : ''}" onclick="window.store.setState({ currentView: 'engineering' })">
+            <span style="font-size: 18px;">🎓</span>
+            <span>Academic</span>
           </a>
           <a class="mobile-nav-item ${state.currentView === 'study' ? 'active' : ''}" onclick="window.store.setState({ currentView: 'study' })">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path></svg>
@@ -123,13 +123,20 @@ class App {
   renderActiveView(state) {
     switch (state.currentView) {
       case 'dashboard': return window.dashboardView ? window.dashboardView.render(state) : '';
+      case 'goals': return window.goalsView ? window.goalsView.render(state) : '';
       case 'tasks': return window.tasksView ? window.tasksView.render(state) : '';
       case 'habits': return window.habitsView ? window.habitsView.render(state) : '';
-      case 'routine': return window.routineView ? window.routineView.render(state) : '';
-      case 'study': return window.studyView ? window.studyView.render(state) : '';
+      case 'projects': return window.projectsView ? window.projectsView.render(state) : '';
       case 'notes': return window.notesView ? window.notesView.render(state) : '';
       case 'calendar': return window.calendarView ? window.calendarView.render(state) : '';
-      case 'journal': return window.journalView ? window.journalView.render(state) : '';
+      case 'engineering': return window.engineeringHubView ? window.engineeringHubView.render(state) : '';
+      case 'placement': return window.placementHubView ? window.placementHubView.render(state) : '';
+      case 'coding': return window.codingHubView ? window.codingHubView.render(state) : '';
+      case 'learning': return window.learningHubView ? window.learningHubView.render(state) : '';
+      case 'resources': return window.resourceLibraryView ? window.resourceLibraryView.render(state) : '';
+      case 'routine': return window.routineView ? window.routineView.render(state) : '';
+      case 'study': return window.studyView ? window.studyView.render(state) : '';
+      case 'devworkspace': return window.devWorkspaceView ? window.devWorkspaceView.render(state) : '';
       case 'analytics': return window.analyticsView ? window.analyticsView.render(state) : '';
       default: return window.dashboardView ? window.dashboardView.render(state) : '';
     }
@@ -143,9 +150,9 @@ window.showToast = function(message, type = 'info') {
 
   const toast = document.createElement('div');
   toast.style.cssText = `
-    background: #1C1C21;
+    background: #18181B;
     color: white;
-    border: 1px solid ${type === 'success' ? '#10B981' : type === 'danger' ? '#E50914' : '#3F3F46'};
+    border: 1px solid ${type === 'success' ? '#10B981' : type === 'danger' ? '#EF4444' : '#3B82F6'};
     padding: 12px 18px;
     border-radius: 10px;
     font-size: 13px;
