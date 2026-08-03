@@ -1,7 +1,7 @@
 /**
  * PLANIX STORAGE SERVICE
  * Multi-Entity JSON / SQLite Database Storage Layer
- * Thread-safe file persistence with default initializers
+ * Clean initializers without dummy placeholder data
  */
 
 const fs = require('fs');
@@ -9,7 +9,6 @@ const path = require('path');
 
 const DATA_DIR = path.join(__dirname, '../../data');
 
-// Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
@@ -33,17 +32,17 @@ class StorageService {
         let initialData = [];
         if (key === 'memory') {
           initialData = {
-            goals: ["Master Full Stack Engineering", "Maintain 8 hours sleep", "Daily Bible & Workout"],
-            preferences: { focusTime: "evening", studyFormat: "flashcards" },
+            goals: [],
+            preferences: { focusTime: "evening" },
             insights: []
           };
         } else if (key === 'user') {
           initialData = {
-            name: "Alex Vance",
-            xp: 1420,
-            level: 3,
-            levelTitle: "Focus Architect",
-            streak: 7,
+            name: "User",
+            xp: 0,
+            level: 1,
+            levelTitle: "Focus Starter",
+            streak: 0,
             theme: "dark"
           };
         }

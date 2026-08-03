@@ -1,68 +1,57 @@
 /**
- * PLANIX CALENDAR VIEW
- * Interactive Day/Week/Month grid with schedule events & Google Calendar ICS Export
+ * PLANIX CALENDAR VIEW (நாட்காட்டி)
+ * Monthly schedule grid showing tasks & habits by date
  */
 
 class CalendarView {
   render(state) {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const tasks = state.tasks || [];
+    const today = new Date();
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const currentMonthStr = `${monthNames[today.getMonth()]} ${today.getFullYear()}`;
 
     return `
-      <div class="animate-fade-in">
-        <div class="view-header">
+      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1000px; margin: 0 auto;">
+        
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
           <div>
-            <div class="view-title">Schedule Calendar 📅</div>
-            <div class="view-subtitle">Timeline view • Drag and Drop ready • Google Calendar Export (.ics)</div>
+            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
+              <span>📅</span> Calendar & Schedule (நாட்காட்டி)
+            </h1>
+            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
+              View your monthly scheduled tasks and habit streak logs.
+            </p>
           </div>
-          <button class="btn btn-secondary" onclick="window.calendarView.exportICS()">📥 Export .ICS File</button>
+
+          <div style="font-size: 18px; font-weight: 800; color: #E50914; background: #141417; padding: 10px 18px; border-radius: 12px; border: 1px solid #27272A;">
+            ${currentMonthStr}
+          </div>
         </div>
 
-        <div class="card">
-          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; font-weight: 700; color: var(--text-tertiary); margin-bottom: 12px;">
-            ${days.map(d => `<div>${d}</div>`).join('')}
+        <!-- Calendar Grid -->
+        <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
+          <!-- Days Header -->
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 700; font-size: 12px; color: #71717A; text-transform: uppercase; padding-bottom: 14px; border-bottom: 1px solid #27272A;">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;">
-            ${Array.from({ length: 31 }).map((_, i) => {
+          <!-- Days Cells -->
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 14px;">
+            ${Array.from({ length: 31 }, (_, i) => {
               const dayNum = i + 1;
-              const hasEvents = dayNum === 1 || dayNum === 5 || dayNum === 12 || dayNum === 20;
+              const isToday = dayNum === today.getDate();
               return `
-                <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; min-height: 90px;">
-                  <div style="font-weight: 700; font-size: 13px; color: ${dayNum === 1 ? 'var(--accent-gold)' : 'var(--text-secondary)'};">${dayNum}</div>
-                  ${hasEvents ? `
-                    <div style="background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.3); padding: 4px 6px; border-radius: 4px; font-size: 10px; color: #a5b4fc; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                      09:00 Deep Work
-                    </div>
-                  ` : ''}
+                <div style="min-height: 70px; background: ${isToday ? 'rgba(229,9,20,0.15)' : '#1C1C21'}; border: 1px solid ${isToday ? '#E50914' : '#27272A'}; border-radius: 10px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div style="font-size: 13px; font-weight: 700; color: ${isToday ? '#E50914' : '#FFF'};">${dayNum}</div>
+                  ${isToday ? `<div style="font-size: 10px; background: #E50914; color: white; border-radius: 4px; padding: 2px 4px; font-weight: 700;">Today</div>` : ''}
                 </div>
               `;
             }).join('')}
           </div>
         </div>
+
       </div>
     `;
-  }
-
-  exportICS() {
-    const icsContent = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Planix Life OS//NONSGML v1.0//EN
-BEGIN:VEVENT
-SUMMARY:Planix Deep Work Focus Block
-DTSTART:20260801T090000Z
-DTEND:20260801T110000Z
-DESCRIPTION:Auto generated schedule block from Planix AI Life OS
-END:VEVENT
-END:VCALENDAR`;
-
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.setAttribute('download', 'planix_schedule.ics');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   }
 }
 

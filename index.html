@@ -3,18 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>PLANIX — The Minimal OS</title>
-  <meta name="description" content="Production-ready, calm Personal OS combining notes, calendar, routines, and habits.">
+  <title>PLANIX — Personal Productivity OS</title>
+  <meta name="description" content="Production-ready Personal OS combining tasks, notes, habits, routines, and focus ambient sounds.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0D0D0D">
 
-  <!-- Google Fonts: Inter for clean, timeless typography -->
+  <!-- PWA Manifest & Apple Touch Icon -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/public/icons/icon-192.png">
+
+  <!-- Google Fonts: Inter typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Modular Design System & CSS -->
+  <!-- Modular CSS -->
   <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/layout.css">
@@ -42,24 +46,31 @@
   <script src="/js/components/sidebar.js"></script>
   <script src="/js/components/commandPalette.js"></script>
   <script src="/js/components/aiDrawer.js"></script>
+  <script src="/js/components/settingsModal.js"></script>
 
   <!-- View Modules -->
   <script src="/js/views/dashboardView.js"></script>
-  <script src="/js/views/secondBrainView.js"></script>
-  <script src="/js/views/lifeGpsView.js"></script>
-  <script src="/js/views/lifeTimelineView.js"></script>
-  <script src="/js/views/notesView.js"></script>
   <script src="/js/views/tasksView.js"></script>
-  <script src="/js/views/routineView.js"></script>
-  <script src="/js/views/predictionsView.js"></script>
-  <script src="/js/views/journalView.js"></script>
-  <script src="/js/views/studyView.js"></script>
   <script src="/js/views/habitsView.js"></script>
+  <script src="/js/views/routineView.js"></script>
+  <script src="/js/views/studyView.js"></script>
+  <script src="/js/views/notesView.js"></script>
   <script src="/js/views/calendarView.js"></script>
+  <script src="/js/views/journalView.js"></script>
   <script src="/js/views/analyticsView.js"></script>
-  <script src="/js/views/gamificationView.js"></script>
 
   <!-- Main SPA Router -->
   <script src="/js/app.js"></script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/public/sw.js')
+          .then(reg => console.log('Service Worker registered:', reg.scope))
+          .catch(err => console.log('Service Worker registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>

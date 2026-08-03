@@ -1,84 +1,115 @@
 /**
- * PLANIX HABIT TRACKER VIEW
- * GitHub-Style Annual Contribution Heatmap Grid, Streak Cards & Consistency Score
+ * PLANIX HABITS VIEW
+ * Habit Tracker with streak counters (🔥), simple checks, and instant API CRUD
  */
 
 class HabitsView {
   render(state) {
-    const habits = state.habits || [
-      { id: 'h1', title: 'Morning Workout & Stretch', category: 'health', streak: 7, completionHistory: {} },
-      { id: 'h2', title: 'Read 20 Pages of Book', category: 'study', streak: 12, completionHistory: {} },
-      { id: 'h3', title: 'Daily Bible Reading', category: 'personal', streak: 14, completionHistory: {} }
-    ];
-
     return `
-      <div class="animate-fade-in">
-        <div class="view-header">
+      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1000px; margin: 0 auto;">
+        
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
           <div>
-            <div class="view-title">Habit Tracker & Heatmap 🔥</div>
-            <div class="view-subtitle">Weekly streaks • Annual contribution matrix • Consistency score</div>
+            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
+              <span>🔁</span> Daily Habit Tracker
+            </h1>
+            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
+              Build powerful daily habits step by step and increase your daily streak!
+            </p>
           </div>
-          <button class="btn btn-primary" onclick="window.habitsView.createNewHabit()">+ New Habit</button>
+
+          <button class="btn" style="background: #E50914; color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 700; cursor: pointer;" onclick="window.habitsView.showAddHabitModal()">
+            + New Habit
+          </button>
         </div>
 
-        <!-- Consistency Matrix Card -->
-        <div class="card" style="margin-bottom: 28px;">
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <div>
-              <div style="font-weight: 700; font-size: 18px;">2026 Consistency Heatmap Grid</div>
-              <div style="font-size: 12px; color: var(--text-secondary);">Visualizing habit check-in frequency over 26 weeks</div>
-            </div>
-            <div style="font-size: 20px; font-weight: 800; color: var(--accent-emerald);">94.2% Success Rate</div>
-          </div>
-
-          <div class="heatmap-grid">
-            ${Array.from({ length: 182 }).map((_, i) => {
-              const level = i % 5 === 0 ? 'level-4' : i % 3 === 0 ? 'level-3' : i % 2 === 0 ? 'level-2' : 'level-1';
-              return `<div class="heatmap-cell ${level}" title="Day ${i + 1}: Completed"></div>`;
-            }).join('')}
+        <!-- Add Habit Inline Form -->
+        <div id="add-habit-container" style="display: none; background: #141417; border: 1px solid #27272A; border-radius: 14px; padding: 16px; margin-bottom: 24px;">
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <input type="text" id="habit-name-input" class="form-input" placeholder="Habit name e.g. Drink 2L water / 30m Reading..." style="flex: 1; background: #1C1C21; border-color: #3F3F46; color: white; padding: 10px; border-radius: 8px;">
+            <button class="btn" style="background: #E50914; color: white; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600;" onclick="window.habitsView.saveNewHabit()">Save Habit</button>
+            <button class="btn" style="background: #27272A; color: white; border: none; border-radius: 8px; padding: 10px 14px;" onclick="window.habitsView.hideAddHabitModal()">Cancel</button>
           </div>
         </div>
 
-        <h3 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 16px;">Active Habits (${habits.length})</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-          ${habits.map(h => `
-            <div class="card">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                <span class="badge badge-health">${h.category || 'health'}</span>
-                <span style="font-size: 14px; font-weight: 800; color: var(--accent-gold);">🔥 ${h.streak || 0} Day Streak</span>
+        <!-- Habit Cards Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+          ${state.habits.map(habit => `
+            <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0;">${habit.name}</h3>
+                  <button class="btn" style="background: transparent; color: #71717A; border: none; font-size: 14px;" title="Delete habit" onclick="window.habitsView.deleteHabit('${habit.id}')">🗑️</button>
+                </div>
+                <div style="font-size: 13px; color: #F5B700; font-weight: 600; margin-top: 6px;">
+                  🔥 ${habit.streak} Day Streak
+                </div>
               </div>
 
-              <div style="font-weight: 700; font-size: 16px; margin-bottom: 14px;">${h.title}</div>
-
-              <button class="btn btn-indigo" style="width: 100%;" onclick="window.habitsView.checkinHabit('${h.id}')">
-                ✓ Log Today's Check-in
-              </button>
+              <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #27272A; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 13px; color: ${habit.completedToday ? '#10B981' : '#A1A1AA'};">
+                  ${habit.completedToday ? '✅ Done Today!' : '⏳ Today Pending'}
+                </span>
+                <button class="btn" style="background: ${habit.completedToday ? '#10B981' : '#E50914'}; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-weight: 700; cursor: pointer;" onclick="window.habitsView.toggleHabit('${habit.id}')">
+                  ${habit.completedToday ? 'Completed ✔' : 'Mark Done'}
+                </button>
+              </div>
             </div>
           `).join('')}
         </div>
+
       </div>
     `;
   }
 
-  async createNewHabit() {
-    const title = prompt('Enter new habit title (e.g., "Daily 30-min Dance Practice"):');
-    if (!title || !title.trim()) return;
-
-    const res = await window.apiClient.post('/habits', { title });
-    if (res.success) {
-      window.store.setState(prev => ({
-        habits: [res.habit, ...prev.habits]
-      }));
-    }
+  showAddHabitModal() {
+    const el = document.getElementById('add-habit-container');
+    if (el) el.style.display = 'block';
   }
 
-  async checkinHabit(id) {
-    const res = await window.apiClient.post(`/habits/${id}/checkin`, {});
-    if (res.success) {
-      window.store.setState(prev => ({
-        habits: prev.habits.map(h => h.id === id ? res.habit : h)
-      }));
-    }
+  hideAddHabitModal() {
+    const el = document.getElementById('add-habit-container');
+    if (el) el.style.display = 'none';
+  }
+
+  async saveNewHabit() {
+    const input = document.getElementById('habit-name-input');
+    if (!input || !input.value.trim()) return;
+
+    const name = input.value.trim();
+    input.value = '';
+    this.hideAddHabitModal();
+
+    const newHabit = {
+      id: `h_${Date.now()}`,
+      name,
+      streak: 1,
+      completedToday: true,
+      category: 'personal'
+    };
+
+    window.store.setState(prev => ({ habits: [...prev.habits, newHabit] }));
+    await window.apiClient.post('/habits', newHabit);
+  }
+
+  async toggleHabit(habitId) {
+    const habits = window.store.state.habits.map(h => {
+      if (h.id === habitId) {
+        const completedToday = !h.completedToday;
+        const streak = completedToday ? h.streak + 1 : Math.max(0, h.streak - 1);
+        return { ...h, completedToday, streak };
+      }
+      return h;
+    });
+    window.store.setState({ habits });
+    await window.apiClient.put(`/habits/${habitId}`, { completedToday: true });
+  }
+
+  async deleteHabit(habitId) {
+    const habits = window.store.state.habits.filter(h => h.id !== habitId);
+    window.store.setState({ habits });
+    await window.apiClient.delete(`/habits/${habitId}`);
   }
 }
 

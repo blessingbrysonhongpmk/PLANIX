@@ -1,86 +1,74 @@
 /**
  * PLANIX ANALYTICS VIEW
- * Productivity charts, focus time allocation, completion velocity & study metrics
+ * Progress overview, streak counters, completion percentages & XP badges
  */
 
 class AnalyticsView {
   render(state) {
+    const totalTasks = state.tasks.length;
+    const completedTasks = state.tasks.filter(t => t.completed).length;
+    const taskCompletionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
     return `
-      <div class="animate-fade-in">
-        <div class="view-header">
+      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1000px; margin: 0 auto;">
+        
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
           <div>
-            <div class="view-title">Analytics & Focus Insights 📊</div>
-            <div class="view-subtitle">Weekly completion velocity • Study time distribution • Health statistics</div>
+            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
+              <span>📊</span> My Progress & Analytics
+            </h1>
+            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
+              Track your task completion %, habit streaks, and level progression over time.
+            </p>
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px;">
-          <!-- Productivity Trend Chart -->
-          <div class="card" style="grid-column: span 8;">
-            <div style="font-weight: 700; font-size: 16px; margin-bottom: 16px;">📈 Weekly Focus Hours Velocity</div>
-            
-            <div style="height: 220px; display: flex; align-items: flex-end; justify-content: space-between; padding: 20px 10px; background: var(--bg-input); border-radius: var(--radius-md);">
-              ${[
-                { day: 'Mon', hours: 4.5 },
-                { day: 'Tue', hours: 6.0 },
-                { day: 'Wed', hours: 5.2 },
-                { day: 'Thu', hours: 7.1 },
-                { day: 'Fri', hours: 6.8 },
-                { day: 'Sat', hours: 8.4 },
-                { day: 'Sun', hours: 5.0 }
-              ].map(bar => `
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1;">
-                  <div style="font-size: 11px; font-weight: 700; color: var(--accent-gold);">${bar.hours}h</div>
-                  <div style="width: 28px; height: ${bar.hours * 22}px; background: var(--accent-gradient-indigo); border-radius: var(--radius-xs);"></div>
-                  <div style="font-size: 11px; color: var(--text-tertiary);">${bar.day}</div>
-                </div>
-              `).join('')}
-            </div>
+        <!-- Big Progress Cards Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+          
+          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
+            <div style="font-size: 12px; color: #A1A1AA; text-transform: uppercase; font-weight: 700;">Task Completion Rate</div>
+            <div style="font-size: 36px; font-weight: 900; color: #E50914; margin: 8px 0;">${taskCompletionRate}%</div>
+            <div style="font-size: 13px; color: #71717A;">${completedTasks} of ${totalTasks} tasks completed</div>
           </div>
 
-          <!-- Time Allocation Break Down -->
-          <div class="card" style="grid-column: span 4;">
-            <div style="font-weight: 700; font-size: 16px; margin-bottom: 16px;">⏱️ Focus Allocation</div>
-            
-            <div style="display: flex; flex-direction: column; gap: 14px;">
-              <div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
-                  <span>📚 Study & Code</span> <span>45%</span>
-                </div>
-                <div style="height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden;">
-                  <div style="width: 45%; height: 100%; background: var(--accent-indigo);"></div>
-                </div>
-              </div>
+          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
+            <div style="font-size: 12px; color: #A1A1AA; text-transform: uppercase; font-weight: 700;">Active Daily Streak</div>
+            <div style="font-size: 36px; font-weight: 900; color: #F5B700; margin: 8px 0;">🔥 ${state.user.streak} Days</div>
+            <div style="font-size: 13px; color: #71717A;">Consistently completing tasks daily</div>
+          </div>
 
-              <div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
-                  <span>🏋️‍♂️ Health & Fitness</span> <span>25%</span>
-                </div>
-                <div style="height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden;">
-                  <div style="width: 25%; height: 100%; background: var(--accent-emerald);"></div>
-                </div>
-              </div>
+          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
+            <div style="font-size: 12px; color: #A1A1AA; text-transform: uppercase; font-weight: 700;">Total XP Points</div>
+            <div style="font-size: 36px; font-weight: 900; color: #10B981; margin: 8px 0;">⚡ ${state.user.xp} XP</div>
+            <div style="font-size: 13px; color: #71717A;">Level ${state.user.level} • ${state.user.levelTitle}</div>
+          </div>
 
-              <div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
-                  <span>💼 Work & Projects</span> <span>20%</span>
-                </div>
-                <div style="height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden;">
-                  <div style="width: 20%; height: 100%; background: var(--accent-amber);"></div>
-                </div>
-              </div>
+        </div>
 
-              <div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
-                  <span>🧘 Personal & Reflection</span> <span>10%</span>
-                </div>
-                <div style="height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden;">
-                  <div style="width: 10%; height: 100%; background: var(--accent-cyan);"></div>
-                </div>
-              </div>
+        <!-- Badges & Achievements -->
+        <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 24px;">
+          <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0 0 16px 0;">Earned Badges</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div style="background: #1C1C21; border: 1px solid #27272A; border-radius: 12px; padding: 16px; text-align: center;">
+              <div style="font-size: 32px; margin-bottom: 6px;">🏅</div>
+              <div style="font-size: 14px; font-weight: 700; color: #FFF;">Focus Champion</div>
+              <div style="font-size: 11px; color: #71717A; margin-top: 2px;">7-Day Streak Achieved</div>
+            </div>
+            <div style="background: #1C1C21; border: 1px solid #27272A; border-radius: 12px; padding: 16px; text-align: center;">
+              <div style="font-size: 32px; margin-bottom: 6px;">📚</div>
+              <div style="font-size: 14px; font-weight: 700; color: #FFF;">Study Master</div>
+              <div style="font-size: 11px; color: #71717A; margin-top: 2px;">Completed 10 Focus Timers</div>
+            </div>
+            <div style="background: #1C1C21; border: 1px solid #27272A; border-radius: 12px; padding: 16px; text-align: center;">
+              <div style="font-size: 32px; margin-bottom: 6px;">💧</div>
+              <div style="font-size: 14px; font-weight: 700; color: #FFF;">Health Booster</div>
+              <div style="font-size: 11px; color: #71717A; margin-top: 2px;">Hydration Habit 5 Days</div>
             </div>
           </div>
         </div>
+
       </div>
     `;
   }

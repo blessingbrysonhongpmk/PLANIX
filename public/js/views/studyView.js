@@ -1,128 +1,208 @@
 /**
- * PLANIX STUDY HUB VIEW
- * 3D Interactive Flip Flashcards, MCQ Practice Engine, Pomodoro Timer & Soundscapes
+ * PLANIX STUDY & FOCUS VIEW
+ * Pomodoro Focus Timer with Web Audio Ambient Sound Synthesizer (Rain, Temple Chime, Soft Waves)
  */
 
 class StudyView {
   constructor() {
-    this.currentCardIndex = 0;
-    this.isFlipped = false;
-    this.pomodoroTime = 25 * 60;
-    this.timerInterval = null;
-    this.flashcards = [
-      { id: 'fc1', front: 'What is Active Recall in learning psychology?', back: 'Active recall involves retrieving information from memory without looking at notes, strengthening neural pathways.' },
-      { id: 'fc2', front: 'What is Spaced Repetition?', back: 'A study technique where review intervals are gradually increased to maximize long-term retention.' },
-      { id: 'fc3', front: 'How does the Pomodoro Technique work?', back: 'Work in focused 25-minute sprints followed by a 5-minute restorative break.' }
-    ];
+    this.timer = null;
+    this.timeLeft = 25 * 60; // 25 minutes default
+    this.isRunning = false;
+    this.audioCtx = null;
+    this.activeNoiseNode = null;
+    this.activeGainNode = null;
   }
 
   render(state) {
-    const card = this.flashcards[this.currentCardIndex] || this.flashcards[0];
-    const mins = String(Math.floor(this.pomodoroTime / 60)).padStart(2, '0');
-    const secs = String(this.pomodoroTime % 60).padStart(2, '0');
+    const minutes = Math.floor(this.timeLeft / 60);
+    const seconds = this.timeLeft % 60;
+    const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    const audioState = state.audioPlayer;
 
     return `
-      <div class="animate-fade-in">
-        <div class="view-header">
+      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1000px; margin: 0 auto;">
+        
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
           <div>
-            <div class="view-title">Study Hub & Focus Timer 🎓</div>
-            <div class="view-subtitle">3D Flashcards • Practice Quizzes • Pomodoro Focus Soundscapes</div>
+            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
+              <span>🎯</span> Focus & Study Timer
+            </h1>
+            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
+              Use the Pomodoro technique to study deeply with soothing ambient soundscapes.
+            </p>
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 340px; gap: 24px;">
-          <!-- Left Column: Flashcards Deck -->
-          <div class="card">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-              <div style="font-weight: 700; font-size: 18px;">🃏 Interactive Flashcard Deck (${this.currentCardIndex + 1}/${this.flashcards.length})</div>
-              <button class="btn btn-secondary" onclick="window.studyView.flipCard()">Flip Card 🔄</button>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+          
+          <!-- Column 1: Pomodoro Timer Card -->
+          <div style="background: #141417; border: 1px solid #27272A; border-radius: 20px; padding: 32px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="font-size: 12px; font-weight: 700; color: #E50914; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;">
+              POMODORO FOCUS SESSION
             </div>
 
-            <!-- 3D Flip Flashcard -->
-            <div class="flashcard-wrapper ${this.isFlipped ? 'flipped' : ''}" onclick="window.studyView.flipCard()">
-              <div class="flashcard-inner">
-                <div class="flashcard-front">
-                  <div style="font-size: 11px; font-weight: 700; color: var(--accent-indigo); text-transform: uppercase; margin-bottom: 12px;">QUESTION</div>
-                  <div style="font-size: 18px; font-weight: 700; color: var(--text-primary); line-height: 1.5;">${card.front}</div>
-                  <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 20px;">Click anywhere to reveal answer</div>
-                </div>
-                <div class="flashcard-back">
-                  <div style="font-size: 11px; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase; margin-bottom: 12px;">ANSWER & EXPLANATION</div>
-                  <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); line-height: 1.6;">${card.back}</div>
-                </div>
-              </div>
+            <div style="font-size: 64px; font-weight: 900; color: #FFFFFF; font-family: var(--font-mono); letter-spacing: 2px; margin: 16px 0; background: radial-gradient(circle, rgba(229,9,20,0.15) 0%, rgba(0,0,0,0) 70%); padding: 20px; border-radius: 20px;">
+              ${formattedTime}
             </div>
 
-            <!-- Self Assessment Rating -->
-            <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px;">
-              <button class="btn btn-secondary" style="border-color: var(--accent-rose); color: var(--accent-rose);" onclick="window.studyView.nextCard()">❌ Hard</button>
-              <button class="btn btn-secondary" style="border-color: var(--accent-gold); color: var(--accent-gold);" onclick="window.studyView.nextCard()">🤔 Medium</button>
-              <button class="btn btn-secondary" style="border-color: var(--accent-emerald); color: var(--accent-emerald);" onclick="window.studyView.nextCard()">✅ Easy</button>
+            <!-- Timer Controls -->
+            <div style="display: flex; gap: 12px; margin-top: 16px;">
+              <button class="btn" style="background: #E50914; color: white; border: none; border-radius: 10px; padding: 12px 28px; font-size: 16px; font-weight: 700; cursor: pointer;" onclick="window.studyView.toggleTimer()">
+                ${this.isRunning ? 'Pause ⏸' : 'Start Focus ▶'}
+              </button>
+              <button class="btn" style="background: #27272A; color: white; border: none; border-radius: 10px; padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer;" onclick="window.studyView.resetTimer(25)">
+                Reset (25m)
+              </button>
+            </div>
+
+            <!-- Quick Preset Buttons -->
+            <div style="display: flex; gap: 8px; margin-top: 24px;">
+              <button class="badge" style="background: rgba(255,255,255,0.05); color: #AAA; border: 1px solid #3F3F46; padding: 6px 12px; border-radius: 6px; cursor: pointer;" onclick="window.studyView.resetTimer(15)">15 Mins</button>
+              <button class="badge" style="background: rgba(255,255,255,0.05); color: #AAA; border: 1px solid #3F3F46; padding: 6px 12px; border-radius: 6px; cursor: pointer;" onclick="window.studyView.resetTimer(25)">25 Mins</button>
+              <button class="badge" style="background: rgba(255,255,255,0.05); color: #AAA; border: 1px solid #3F3F46; padding: 6px 12px; border-radius: 6px; cursor: pointer;" onclick="window.studyView.resetTimer(45)">45 Mins</button>
+              <button class="badge" style="background: rgba(255,255,255,0.05); color: #AAA; border: 1px solid #3F3F46; padding: 6px 12px; border-radius: 6px; cursor: pointer;" onclick="window.studyView.resetTimer(60)">60 Mins</button>
             </div>
           </div>
 
-          <!-- Right Column: Pomodoro Focus Timer -->
-          <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-            <div style="font-weight: 700; font-size: 16px; color: var(--text-secondary); margin-bottom: 16px;">⏱️ Pomodoro Focus Timer</div>
-            
-            <div style="font-family: var(--font-display); font-size: 56px; font-weight: 800; color: var(--accent-gold); letter-spacing: -2px; margin: 12px 0;">
-              ${mins}:${secs}
+          <!-- Column 2: UNIQUE FEATURE - Focus Ambient Sound Player -->
+          <div style="background: #141417; border: 1px solid #27272A; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0 0 6px 0; display: flex; align-items: center; gap: 8px;">
+                <span>🎧</span> Focus Ambient Sounds
+              </h3>
+              <p style="color: #A1A1AA; font-size: 13px;">
+                Built-in soothing ambient sounds to help you study without distraction.
+              </p>
             </div>
 
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-              <button class="btn btn-primary" onclick="window.studyView.toggleTimer()">${this.timerInterval ? 'Pause' : 'Start Focus'}</button>
-              <button class="btn btn-secondary" onclick="window.studyView.resetTimer()">Reset</button>
+            <!-- Sound Preset Selection -->
+            <div style="display: flex; flex-direction: column; gap: 12px; margin: 20px 0;">
+              <button class="btn" style="display: flex; align-items: center; justify-content: space-between; padding: 14px; border-radius: 12px; border: 1px solid #27272A; ${audioState.isPlaying && audioState.soundType === 'rain' ? 'background: rgba(229,9,20,0.15); border-color: #E50914; color: #FFF;' : 'background: #1C1C21; color: #AAA;'}" onclick="window.studyView.playAmbientSound('rain')">
+                <span style="display: flex; align-items: center; gap: 10px; font-weight: 600;">
+                  <span>🌧️</span> Rain & Thunder
+                </span>
+                <span>${audioState.isPlaying && audioState.soundType === 'rain' ? 'Playing 🔊' : 'Play ▶'}</span>
+              </button>
+
+              <button class="btn" style="display: flex; align-items: center; justify-content: space-between; padding: 14px; border-radius: 12px; border: 1px solid #27272A; ${audioState.isPlaying && audioState.soundType === 'temple' ? 'background: rgba(229,9,20,0.15); border-color: #E50914; color: #FFF;' : 'background: #1C1C21; color: #AAA;'}" onclick="window.studyView.playAmbientSound('temple')">
+                <span style="display: flex; align-items: center; gap: 10px; font-weight: 600;">
+                  <span>🔔</span> Meditation Chimes & Bell
+                </span>
+                <span>${audioState.isPlaying && audioState.soundType === 'temple' ? 'Playing 🔊' : 'Play ▶'}</span>
+              </button>
+
+              <button class="btn" style="display: flex; align-items: center; justify-content: space-between; padding: 14px; border-radius: 12px; border: 1px solid #27272A; ${audioState.isPlaying && audioState.soundType === 'waves' ? 'background: rgba(229,9,20,0.15); border-color: #E50914; color: #FFF;' : 'background: #1C1C21; color: #AAA;'}" onclick="window.studyView.playAmbientSound('waves')">
+                <span style="display: flex; align-items: center; gap: 10px; font-weight: 600;">
+                  <span>🌊</span> Soft Ocean Waves
+                </span>
+                <span>${audioState.isPlaying && audioState.soundType === 'waves' ? 'Playing 🔊' : 'Play ▶'}</span>
+              </button>
             </div>
 
-            <div class="audio-visualizer">
-              <div class="visualizer-bar" style="animation-delay: 0s;"></div>
-              <div class="visualizer-bar" style="animation-delay: 0.2s;"></div>
-              <div class="visualizer-bar" style="animation-delay: 0.4s;"></div>
-              <div class="visualizer-bar" style="animation-delay: 0.1s;"></div>
-              <div class="visualizer-bar" style="animation-delay: 0.3s;"></div>
-            </div>
-            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 8px;">Ambient Soundscape Active</div>
+            <!-- Stop Sound Button -->
+            ${audioState.isPlaying ? `
+              <button class="btn" style="background: #27272A; color: #FF4D4D; border: 1px solid #3F3F46; border-radius: 10px; padding: 10px; font-weight: 600; cursor: pointer;" onclick="window.studyView.stopAmbientSound()">
+                ⏹ Stop Sound
+              </button>
+            ` : ''}
+
           </div>
+
         </div>
+
       </div>
     `;
   }
 
-  flipCard() {
-    this.isFlipped = !this.isFlipped;
-    window.store.notify();
-  }
-
-  nextCard() {
-    this.isFlipped = false;
-    this.currentCardIndex = (this.currentCardIndex + 1) % this.flashcards.length;
-    window.store.notify();
-  }
-
   toggleTimer() {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-      this.timerInterval = null;
+    if (this.isRunning) {
+      clearInterval(this.timer);
+      this.isRunning = false;
     } else {
-      this.timerInterval = setInterval(() => {
-        if (this.pomodoroTime > 0) {
-          this.pomodoroTime--;
+      this.isRunning = true;
+      this.timer = setInterval(() => {
+        if (this.timeLeft > 0) {
+          this.timeLeft--;
           window.store.notify();
         } else {
-          clearInterval(this.timerInterval);
-          this.timerInterval = null;
-          alert('🎉 Focus session complete! Take a 5 minute break.');
+          clearInterval(this.timer);
+          this.isRunning = false;
+          alert("🎉 Focus session completed! Great job!");
         }
       }, 1000);
     }
     window.store.notify();
   }
 
-  resetTimer() {
-    if (this.timerInterval) clearInterval(this.timerInterval);
-    this.timerInterval = null;
-    this.pomodoroTime = 25 * 60;
+  resetTimer(mins) {
+    if (this.timer) clearInterval(this.timer);
+    this.timeLeft = mins * 60;
+    this.isRunning = false;
     window.store.notify();
+  }
+
+  playAmbientSound(type) {
+    this.stopAmbientSound();
+
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      this.audioCtx = new AudioCtx();
+
+      // Create Web Audio noise buffer
+      const bufferSize = this.audioCtx.sampleRate * 2;
+      const noiseBuffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = this.audioCtx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+      whiteNoise.loop = true;
+
+      // Filter based on sound type
+      const filter = this.audioCtx.createBiquadFilter();
+      if (type === 'rain') {
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, this.audioCtx.currentTime);
+      } else if (type === 'waves') {
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(400, this.audioCtx.currentTime);
+      } else {
+        filter.type = 'peaking';
+        filter.frequency.setValueAtTime(1200, this.audioCtx.currentTime);
+      }
+
+      const gainNode = this.audioCtx.createGain();
+      gainNode.gain.setValueAtTime(0.08, this.audioCtx.currentTime);
+
+      whiteNoise.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(this.audioCtx.destination);
+
+      whiteNoise.start();
+      this.activeNoiseNode = whiteNoise;
+      this.activeGainNode = gainNode;
+
+      window.store.setState({ audioPlayer: { isPlaying: true, soundType: type, volume: 0.5 } });
+    } catch (e) {
+      console.warn("Audio Context error:", e);
+      window.store.setState({ audioPlayer: { isPlaying: true, soundType: type, volume: 0.5 } });
+    }
+  }
+
+  stopAmbientSound() {
+    if (this.activeNoiseNode) {
+      try { this.activeNoiseNode.stop(); } catch(e){}
+      this.activeNoiseNode = null;
+    }
+    if (this.audioCtx) {
+      try { this.audioCtx.close(); } catch(e){}
+      this.audioCtx = null;
+    }
+    window.store.setState({ audioPlayer: { isPlaying: false, soundType: 'rain', volume: 0.5 } });
   }
 }
 

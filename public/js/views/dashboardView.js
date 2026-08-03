@@ -1,255 +1,228 @@
 /**
- * PLANIX — HUMAN-FIRST CALM DASHBOARD VIEW
- * A private office command center where intelligence works silently in the background.
+ * PLANIX DASHBOARD VIEW
+ * Clean, production-ready workspace overview with Daily Productivity Score & Morning Check-In
  */
 
 class DashboardView {
   render(state) {
-    const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
     const pendingTasks = state.tasks.filter(t => !t.completed);
     const completedTasks = state.tasks.filter(t => t.completed);
-    const topFocus = pendingTasks[0] || null;
+    const totalTasks = state.tasks.length;
+    const completedHabits = state.habits.filter(h => h.completedToday);
+    const totalHabits = state.habits.length;
 
-    // Greeting based on real hour
-    const hour = new Date().getHours();
-    let timeGreeting = 'Good Evening';
-    if (hour < 12) timeGreeting = 'Good Morning';
-    else if (hour < 18) timeGreeting = 'Good Afternoon';
-
-    // Dynamic metrics
-    const totalTasks = state.tasks.length || 1;
-    const completionPct = Math.round((completedTasks.length / totalTasks) * 100);
-    const habits = state.habits || [];
-    const maxStreak = habits.length > 0 ? Math.max(...habits.map(h => h.streak || 0)) : 7;
-
-    // Active time slot detection based on system hour
-    let activeIndex = 1;
-    if (hour < 7) activeIndex = 0;
-    else if (hour < 11) activeIndex = 1;
-    else if (hour < 17) activeIndex = 2;
-    else if (hour < 20) activeIndex = 3;
-    else if (hour < 22) activeIndex = 4;
-    else activeIndex = 5;
-
-    const timelineItems = [
-      { time: '06:30 AM', title: 'Wake Up & Morning Mindfulness', icon: '🌅' },
-      { time: '08:30 AM', title: 'Deep Focus Block (High Priority)', icon: '🎯' },
-      { time: '11:30 AM', title: 'Project Implementation & Core Code', icon: '💻' },
-      { time: '05:30 PM', title: 'Fitness & Health Workout Block', icon: '🏋️‍♂️' },
-      { time: '08:00 PM', title: 'Reading & Knowledge Capture', icon: '📚' },
-      { time: '10:30 PM', title: 'Wind Down & Sleep Protocol', icon: '🌙' }
-    ];
+    // Calculate Daily Productivity Score (0-100%)
+    let taskScore = totalTasks > 0 ? (completedTasks.length / totalTasks) * 50 : 25;
+    let habitScore = totalHabits > 0 ? (completedHabits.length / totalHabits) * 50 : 25;
+    let productivityScore = Math.min(100, Math.round(taskScore + habitScore));
 
     return `
-      <div class="animate-fade-in">
+      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1200px; margin: 0 auto;">
         
-        <!-- Header: Calm Greeting & Date -->
-        <div class="view-header" style="margin-bottom: 24px;">
-          <div>
-            <div style="font-size: 12px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">
-              ${todayStr}
-            </div>
-            <h1 class="view-title" style="font-size: 26px;">${timeGreeting}, ${state.user.name.split(' ')[0]}.</h1>
-          </div>
-          <div style="display: flex; gap: 10px;">
-            <button class="btn btn-secondary" onclick="window.store.setState({ currentView: 'study' })">
-              ⏱️ Focus Timer
-            </button>
-            <button class="btn btn-primary" onclick="window.store.setState({ currentView: 'tasks' })">
-              + New Task
-            </button>
-          </div>
-        </div>
-
-        <!-- Progress Snapshot (Top High-Level Metrics) -->
-        <div class="snapshot-grid" style="margin-bottom: 24px;">
-          <div class="snapshot-card">
-            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">Tasks Completed</span>
-            <span style="font-family: var(--font-display); font-size: 22px; font-weight: 800; color: #fff;">${completedTasks.length}/${totalTasks} (${completionPct}%)</span>
-          </div>
-          <div class="snapshot-card">
-            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">Habit Streak</span>
-            <span style="font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--accent-red);">${maxStreak} Days 🔥</span>
-          </div>
-          <div class="snapshot-card">
-            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">Study Hours</span>
-            <span style="font-family: var(--font-display); font-size: 22px; font-weight: 800; color: #fff;">24.5 Hours</span>
-          </div>
-          <div class="snapshot-card">
-            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">Focus Velocity</span>
-            <span style="font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--accent-gold);">18.2 Hours</span>
-          </div>
-          <div class="snapshot-card">
-            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">Journal Streak</span>
-            <span style="font-family: var(--font-display); font-size: 22px; font-weight: 800; color: #fff;">7 Days 📝</span>
-          </div>
-        </div>
-
-        <!-- Main Command Grid (8 Cols Left, 4 Cols Right) -->
-        <div class="command-center-grid">
-          
-          <!-- LEFT COLUMN (8 cols) -->
-          <div style="grid-column: span 8; display: flex; flex-direction: column; gap: 24px;">
-            
-            <!-- SECTION 1: TODAY'S MISSION (HERO CARD) -->
-            <section class="hero-mission-card">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                <span class="badge badge-urgent" style="font-size: 11px; letter-spacing: 1px;">TODAY'S MISSION #1</span>
-                <span style="font-size: 12px; color: var(--text-tertiary);">Est. Focus: 45 Mins • Target: 18:00</span>
+        <!-- Welcome Hero Header with Daily Productivity Score Wheel -->
+        <div style="background: linear-gradient(135deg, rgba(229, 9, 20, 0.15) 0%, rgba(20, 20, 23, 0.9) 100%); border: 1px solid rgba(229, 9, 20, 0.25); border-radius: 16px; padding: 28px; margin-bottom: 24px; position: relative; overflow: hidden;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div>
+              <div style="font-size: 13px; font-weight: 700; color: #E50914; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
+                WORKSPACE OVERVIEW
               </div>
-              
-              ${topFocus ? `
-                <h2 style="font-family: var(--font-display); font-size: 24px; font-weight: 800; color: #FFFFFF; line-height: 1.3; margin-bottom: 16px;">
-                  ${topFocus.text}
-                </h2>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  <button class="btn btn-hero" onclick="window.store.setState({ currentView: 'study' })">
-                    <span>⚡ Start Focus Session</span>
-                  </button>
-                  <button class="btn btn-hero-outline" onclick="window.dashboardView.completeTask('${topFocus.id}')">
-                    <span>✓ Complete Mission</span>
-                  </button>
-                </div>
-              ` : `
-                <h2 style="font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--text-secondary); margin-bottom: 16px;">
-                  🎉 Mission Accomplished! All high-priority tasks completed for today.
-                </h2>
-                <button class="btn btn-hero" onclick="window.store.setState({ currentView: 'tasks' })">
-                  <span>+ Plan Next Action</span>
-                </button>
-              `}
-            </section>
-
-            <!-- SECTION 2: NORTH STAR LONG-TERM GOAL -->
-            <section class="goal-card">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                <div>
-                  <div style="font-size: 11px; font-weight: 700; color: var(--accent-red); text-transform: uppercase; letter-spacing: 1px;">NORTH STAR GOAL</div>
-                  <h3 style="font-family: var(--font-display); font-size: 19px; font-weight: 800; color: #fff; margin-top: 2px;">Build PLANIX Version 1.0</h3>
-                </div>
-                <div style="text-align: right;">
-                  <span style="font-family: var(--font-display); font-size: 22px; font-weight: 800; color: #fff;">42%</span>
-                  <div style="font-size: 12px; color: var(--text-tertiary);">134 Days Remaining</div>
-                </div>
-              </div>
-
-              <!-- Progress Bar -->
-              <div class="goal-progress-track">
-                <div class="goal-progress-fill" style="width: 42%;"></div>
-              </div>
-
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-subtle);">
-                <div>
-                  <div style="font-size: 11px; color: var(--text-tertiary);">Today's Contribution</div>
-                  <div style="font-size: 13px; font-weight: 700; color: var(--accent-gold);">Complete Authentication Module</div>
-                </div>
-                <div>
-                  <div style="font-size: 11px; color: var(--text-tertiary);">Next Milestone</div>
-                  <div style="font-size: 13px; font-weight: 700; color: #fff;">System Architecture Audit</div>
-                </div>
-              </div>
-            </section>
-
-            <!-- SECTION 3: NEXT FOCUS SESSION WIDGET WITH EMBEDDED HINT -->
-            <section class="card" style="border-top: 3px solid var(--accent-gold);">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                <div>
-                  <div style="font-size: 11px; font-weight: 700; color: var(--accent-gold); text-transform: uppercase;">NEXT FOCUS SESSION</div>
-                  <h3 style="font-size: 17px; font-weight: 700; color: #fff; margin-top: 2px;">System Architecture Focus Block</h3>
-                </div>
-                <span class="badge badge-health">5 Day Streak 🔥</span>
-              </div>
-              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
-                Duration: <strong>50 Minutes</strong> • Block uninterrupted focus time to enter flow state.
+              <h1 style="font-size: 28px; font-weight: 800; color: #FFFFFF; margin: 0;">
+                Welcome back, ${state.user.name || 'User'}! 👋
+              </h1>
+              <p style="color: #A1A1AA; font-size: 14px; margin-top: 6px;">
+                You have <strong style="color: #FFF;">${pendingTasks.length} active tasks</strong> in your workspace today.
               </p>
 
-              <!-- Embedded Natural Suggestion -->
-              <div style="font-size: 12px; color: var(--text-secondary); background: var(--bg-input); padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                <span>💡</span>
-                <span>You're usually most productive between 8:00 PM and 10:00 PM based on past completion velocity.</span>
+              <!-- Quick Action Buttons -->
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px;">
+                <button class="btn" style="background: #E50914; color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;" onclick="window.store.setState({ currentView: 'tasks' })">
+                  <span>➕</span> Add Task
+                </button>
+                <button class="btn" style="background: #1C1C21; color: white; border: 1px solid #3F3F46; border-radius: 10px; padding: 10px 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;" onclick="window.store.setState({ currentView: 'study' })">
+                  <span>⏱️</span> Start Focus
+                </button>
+                <button class="btn" style="background: rgba(16,185,129,0.15); color: #10B981; border: 1px solid rgba(16,185,129,0.3); border-radius: 10px; padding: 10px 16px; font-weight: 600; cursor: pointer;" onclick="window.dashboardView.startDayCheckIn()">
+                  ☀️ Start My Day
+                </button>
               </div>
+            </div>
 
-              <button class="btn btn-indigo" onclick="window.store.setState({ currentView: 'study' })">
-                ▶ Start 50-Min Focus Session
-              </button>
-            </section>
-
-            <!-- SECTION 4: QUICK CONTINUE -->
-            <section>
-              <h3 style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 12px;">Quick Continue</h3>
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                <div class="card" style="cursor: pointer; padding: 14px;" onclick="window.store.setState({ currentView: 'notes' })">
-                  <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px;">RECENT NOTE</div>
-                  <div style="font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Solidity Contracts</div>
-                </div>
-                <div class="card" style="cursor: pointer; padding: 14px;" onclick="window.store.setState({ currentView: 'routine' })">
-                  <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px;">DAILY ROUTINE</div>
-                  <div style="font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Morning Focus Block</div>
-                </div>
-                <div class="card" style="cursor: pointer; padding: 14px;" onclick="window.store.setState({ currentView: 'tasks' })">
-                  <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px;">ACTIVE PROJECT</div>
-                  <div style="font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">PLANIX Full Stack OS</div>
-                </div>
+            <!-- Daily Productivity Score Gauge Card -->
+            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; text-align: center; min-width: 170px;">
+              <div style="font-size: 11px; font-weight: 700; color: #A1A1AA; text-transform: uppercase;">Daily Score</div>
+              <div style="font-size: 38px; font-weight: 900; color: ${productivityScore >= 70 ? '#10B981' : '#F5B700'}; margin: 4px 0;">
+                ${productivityScore}%
               </div>
-            </section>
-
+              <div style="font-size: 11px; color: #E50914; font-weight: 600;">
+                ${productivityScore >= 70 ? '🌟 High Focus' : '⚡ Keep Going'}
+              </div>
+            </div>
           </div>
 
-          <!-- RIGHT COLUMN (4 cols) -->
-          <div style="grid-column: span 4; display: flex; flex-direction: column; gap: 24px;">
-            
-            <!-- SECTION 5: TODAY'S TIMELINE -->
-            <section class="card">
-              <div style="font-weight: 700; font-size: 15px; color: #fff; margin-bottom: 14px;">Today's Timeline</div>
-              <div class="vertical-timeline">
-                ${timelineItems.map((item, idx) => `
-                  <div class="timeline-item ${idx === activeIndex ? 'active' : ''}">
-                    <div class="timeline-node"></div>
-                    <div style="flex: 1;">
-                      <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <span style="font-size: 11px; font-weight: 700; color: ${idx === activeIndex ? 'var(--accent-red)' : 'var(--text-tertiary)'};">${item.time}</span>
-                        ${idx === activeIndex ? '<span class="badge badge-urgent" style="font-size: 10px; padding: 2px 6px;">NOW</span>' : ''}
+          <!-- Quick Stats Bar -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08);">
+            <div style="background: rgba(255,255,255,0.03); padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+              <div style="font-size: 12px; color: #A1A1AA;">Pending Tasks</div>
+              <div style="font-size: 22px; font-weight: 800; color: #E50914; margin-top: 2px;">${pendingTasks.length}</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+              <div style="font-size: 12px; color: #A1A1AA;">Habits Done Today</div>
+              <div style="font-size: 22px; font-weight: 800; color: #10B981; margin-top: 2px;">${completedHabits.length} / ${state.habits.length}</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+              <div style="font-size: 12px; color: #A1A1AA;">Daily Streak</div>
+              <div style="font-size: 22px; font-weight: 800; color: #F5B700; margin-top: 2px;">🔥 ${state.user.streak || 0} Days</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+              <div style="font-size: 12px; color: #A1A1AA;">User Level</div>
+              <div style="font-size: 18px; font-weight: 700; color: #FFF; margin-top: 2px;">Lvl ${state.user.level || 1} • ${state.user.levelTitle || 'Focus Starter'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px;">
+          
+          <!-- Column 1: Today's Tasks -->
+          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0; display: flex; align-items: center; gap: 8px;">
+                <span>✅</span> Active Tasks
+              </h3>
+              <a href="#" onclick="event.preventDefault(); window.store.setState({ currentView: 'tasks' })" style="color: #E50914; font-size: 12px; font-weight: 600; text-decoration: none;">Manage →</a>
+            </div>
+
+            ${pendingTasks.length === 0 ? `
+              <div style="text-align: center; padding: 36px 12px; color: #71717A; font-size: 14px; background: #1C1C21; border-radius: 12px; border: 1px dashed #27272A;">
+                <div style="font-size: 24px; margin-bottom: 6px;">📝</div>
+                <div>No pending tasks yet. Click <strong>'Add Task'</strong> to create one!</div>
+              </div>
+            ` : `
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                ${pendingTasks.slice(0, 5).map(task => `
+                  <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #1C1C21; border-radius: 10px; border: 1px solid #27272A;">
+                    <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                      <input type="checkbox" style="width: 18px; height: 18px; accent-color: #E50914; cursor: pointer;" onchange="window.dashboardView.toggleTask('${task.id}')">
+                      <span style="color: #FFF; font-size: 14px;">${task.text}</span>
+                    </div>
+                    <span style="font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 700; ${task.priority === 'high' ? 'background: rgba(229,9,20,0.2); color: #FF4D4D;' : 'background: rgba(245,183,0,0.2); color: #F5B700;'}">
+                      ${task.priority ? task.priority.toUpperCase() : 'NORMAL'}
+                    </span>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+
+          <!-- Column 2: Today's Habits -->
+          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0; display: flex; align-items: center; gap: 8px;">
+                <span>🔁</span> Daily Habits
+              </h3>
+              <a href="#" onclick="event.preventDefault(); window.store.setState({ currentView: 'habits' })" style="color: #E50914; font-size: 12px; font-weight: 600; text-decoration: none;">Manage →</a>
+            </div>
+
+            ${state.habits.length === 0 ? `
+              <div style="text-align: center; padding: 36px 12px; color: #71717A; font-size: 14px; background: #1C1C21; border-radius: 12px; border: 1px dashed #27272A;">
+                <div style="font-size: 24px; margin-bottom: 6px;">🔁</div>
+                <div>No habits set yet. Head to <strong>Daily Habits</strong> to create one!</div>
+              </div>
+            ` : `
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                ${state.habits.map(habit => `
+                  <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #1C1C21; border-radius: 10px; border: 1px solid #27272A;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <button class="btn" style="background: ${habit.completedToday ? '#10B981' : '#27272A'}; color: white; border: none; border-radius: 8px; width: 32px; height: 32px; font-weight: 700; cursor: pointer;" onclick="window.dashboardView.toggleHabit('${habit.id}')">
+                        ${habit.completedToday ? '✓' : '+'}
+                      </button>
+                      <div>
+                        <div style="color: #FFF; font-size: 14px; font-weight: 500;">${habit.name}</div>
+                        <div style="font-size: 11px; color: #F5B700;">🔥 ${habit.streak} day streak</div>
                       </div>
-                      <div style="font-size: 13px; font-weight: 600; color: #fff; margin-top: 2px;">${item.icon} ${item.title}</div>
+                    </div>
+                    <span style="font-size: 12px; color: #A1A1AA;">${habit.completedToday ? 'Completed' : 'Pending'}</span>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+
+          <!-- Column 3: My Goals -->
+          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0; display: flex; align-items: center; gap: 8px;">
+                <span>🎯</span> Goals & Milestones
+              </h3>
+              <button class="btn" style="background: #1C1C21; border: 1px solid #3F3F46; color: white; border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer;" onclick="window.dashboardView.addGoal()">+ Goal</button>
+            </div>
+
+            ${state.goals.length === 0 ? `
+              <div style="text-align: center; padding: 36px 12px; color: #71717A; font-size: 14px; background: #1C1C21; border-radius: 12px; border: 1px dashed #27272A;">
+                <div style="font-size: 24px; margin-bottom: 6px;">🎯</div>
+                <div>No active goals set yet. Click <strong>'+ Goal'</strong> to track a major goal!</div>
+              </div>
+            ` : `
+              <div style="display: flex; flex-direction: column; gap: 14px;">
+                ${state.goals.map(goal => `
+                  <div style="padding: 12px; background: #1C1C21; border-radius: 10px; border: 1px solid #27272A;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #FFF; margin-bottom: 6px;">
+                      <span>${goal.title}</span>
+                      <span style="color: #E50914;">${goal.progress}%</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: #27272A; border-radius: 4px; overflow: hidden;">
+                      <div style="width: ${goal.progress}%; height: 100%; background: linear-gradient(90deg, #E50914, #FF1E27); border-radius: 4px;"></div>
                     </div>
                   </div>
                 `).join('')}
               </div>
-            </section>
-
-            <!-- SECTION 6: UPCOMING MILESTONES -->
-            <section class="card">
-              <div style="font-weight: 700; font-size: 15px; color: #fff; margin-bottom: 12px;">Upcoming Milestones</div>
-              <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #fff; font-weight: 600;">System Design Audit</span>
-                  <span style="color: var(--accent-red); font-size: 12px; font-weight: 700;">Tomorrow</span>
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #fff; font-weight: 600;">Sem-2 Final Exam</span>
-                  <span style="color: var(--text-tertiary); font-size: 12px;">In 5 Days</span>
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px;">
-                  <span style="color: #fff; font-weight: 600;">Production Security Review</span>
-                  <span style="color: var(--text-tertiary); font-size: 12px;">In 8 Days</span>
-                </div>
-              </div>
-            </section>
-
+            `}
           </div>
+
         </div>
       </div>
     `;
   }
 
-  async completeTask(id) {
-    if (!id || id === 'undefined') return;
-    const res = await window.apiClient.put(`/tasks/${id}`, { completed: true });
-    if (res.success || res.offline) {
-      window.store.setState(prev => ({
-        tasks: prev.tasks.map(t => t.id === id ? { ...t, completed: true } : t)
-      }));
-    }
+  async toggleTask(taskId) {
+    const tasks = window.store.state.tasks.map(t => {
+      if (t.id === taskId) return { ...t, completed: !t.completed };
+      return t;
+    });
+    window.store.setState({ tasks });
+    await window.apiClient.put(`/tasks/${taskId}`, { completed: true });
+    if (window.showToast) window.showToast("Task completed! 🎉", "success");
+  }
+
+  async toggleHabit(habitId) {
+    const habits = window.store.state.habits.map(h => {
+      if (h.id === habitId) {
+        const completedToday = !h.completedToday;
+        const streak = completedToday ? h.streak + 1 : Math.max(0, h.streak - 1);
+        return { ...h, completedToday, streak };
+      }
+      return h;
+    });
+    window.store.setState({ habits });
+    await window.apiClient.put(`/habits/${habitId}`, { completedToday: true });
+    if (window.showToast) window.showToast("Habit logged for today! 🔥", "success");
+  }
+
+  addGoal() {
+    const title = prompt("Enter main goal title:");
+    if (!title) return;
+    const newGoal = { id: `g_${Date.now()}`, title, progress: 10 };
+    window.store.setState(prev => ({ goals: [...prev.goals, newGoal] }));
+    if (window.showToast) window.showToast("Goal created!", "success");
+  }
+
+  startDayCheckIn() {
+    const streak = (window.store.state.user.streak || 0) + 1;
+    window.store.setState(prev => ({ user: { ...prev.user, streak } }));
+    if (window.showToast) window.showToast(`Daily Morning Check-in completed! Streak: 🔥 ${streak} Days!`, "success");
   }
 }
 

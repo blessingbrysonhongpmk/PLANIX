@@ -1,158 +1,140 @@
 /**
- * PLANIX SMART NOTES VIEW
- * Rich Text / Markdown Editor, Voice Notes, Folders, Version History & Smart Tools
+ * PLANIX NOTES VIEW
+ * Unified Notes & Knowledge Manager with Category Folders and REST API CRUD
  */
 
 class NotesView {
+  constructor() {
+    this.selectedCategory = 'all';
+  }
+
   render(state) {
-    const notes = state.notes || [];
-    const activeNote = notes.find(n => n.id === state.activeNoteId) || notes[0] || {
-      title: 'Welcome to Smart Notes',
-      content: '# My First Note\n\nStart typing here...',
-      folder: 'General',
-      tags: ['welcome']
-    };
+    const activeNote = state.notes.find(n => n.id === state.activeNoteId) || state.notes[0] || null;
+    let filteredNotes = state.notes;
+    if (this.selectedCategory !== 'all') {
+      filteredNotes = state.notes.filter(n => n.category === this.selectedCategory);
+    }
 
     return `
-      <div class="animate-fade-in">
-        <div class="view-header">
+      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1100px; margin: 0 auto;">
+        
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
           <div>
-            <div class="view-title">Smart Notes & Knowledge Base 📝</div>
-            <div class="view-subtitle">Markdown support • Voice notes • Smart Assistant Tools</div>
+            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
+              <span>📝</span> My Notes
+            </h1>
+            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
+              Write study notes, daily ideas, and keep your important thoughts saved.
+            </p>
           </div>
-          <button class="btn btn-primary" onclick="window.notesView.createNewNote()">+ New Note</button>
+
+          <button class="btn" style="background: #E50914; color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 700; cursor: pointer;" onclick="window.notesView.createNewNote()">
+            + New Note
+          </button>
         </div>
 
-        <div class="notes-layout">
+        <!-- Main Notes Layout -->
+        <div style="display: grid; grid-template-columns: 280px 1fr; gap: 20px; min-height: 520px;">
+          
           <!-- Notes Sidebar List -->
-          <div class="notes-sidebar">
-            <input type="text" class="form-input" placeholder="Filter notes..." oninput="window.notesView.filterNotes(this.value)">
+          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 16px; display: flex; flex-direction: column;">
             
-            <div class="notes-list" id="notes-list-container">
-              ${notes.map(n => `
-                <div class="note-item ${n.id === activeNote.id ? 'active' : ''}" onclick="window.store.setState({ activeNoteId: '${n.id}' })">
-                  <div style="font-weight: 600; font-size: 14px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    ${n.isPinned ? '📌 ' : ''}${n.title || 'Untitled Note'}
-                  </div>
-                  <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">
-                    📁 ${n.folder || 'General'} • ${new Date(n.updatedAt || Date.now()).toLocaleDateString()}
-                  </div>
+            <!-- Category Filter Pills -->
+            <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #27272A;">
+              <button class="badge" style="background: ${this.selectedCategory === 'all' ? '#E50914' : '#27272A'}; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer;" onclick="window.notesView.setCategory('all')">All</button>
+              <button class="badge" style="background: ${this.selectedCategory === 'study' ? '#E50914' : '#27272A'}; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer;" onclick="window.notesView.setCategory('study')">Study</button>
+              <button class="badge" style="background: ${this.selectedCategory === 'personal' ? '#E50914' : '#27272A'}; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer;" onclick="window.notesView.setCategory('personal')">Personal</button>
+            </div>
+
+            <!-- Notes List -->
+            <div style="display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto;">
+              ${filteredNotes.map(n => `
+                <div style="padding: 12px; border-radius: 10px; cursor: pointer; border: 1px solid ${n.id === (activeNote?.id) ? '#E50914' : '#27272A'}; background: ${n.id === (activeNote?.id) ? 'rgba(229,9,20,0.1)' : '#1C1C21'};" onclick="window.store.setState({ activeNoteId: '${n.id}' })">
+                  <div style="font-size: 14px; font-weight: 600; color: #FFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.title}</div>
+                  <div style="font-size: 11px; color: #A1A1AA; margin-top: 4px;">${n.category ? n.category.toUpperCase() : 'NOTE'}</div>
                 </div>
               `).join('')}
             </div>
           </div>
 
-          <!-- Note Editor Container -->
-          <div class="note-editor-card">
-            <div class="editor-toolbar">
-              <button class="btn btn-secondary" onclick="window.notesView.runAIAction('${activeNote.id}', 'summarize')">✦ Summarize Note</button>
-              <button class="btn btn-secondary" onclick="window.notesView.runAIAction('${activeNote.id}', 'study-flashcards')">🃏 Create Flashcards</button>
-              <button class="btn btn-secondary" onclick="window.notesView.toggleVoiceRecorder()">🎙️ Voice Note</button>
-              <button class="btn btn-secondary" onclick="window.notesView.showVersionHistory('${activeNote.id}')">⏳ Version History</button>
-              <button class="btn btn-icon" style="margin-left: auto;" onclick="window.notesView.deleteNote('${activeNote.id}')">🗑️</button>
-            </div>
+          <!-- Note Editor Area -->
+          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+            ${activeNote ? `
+              <div style="display: flex; flex-direction: column; gap: 16px; flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <input type="text" id="edit-note-title" class="form-input" value="${activeNote.title}" style="font-size: 20px; font-weight: 700; background: transparent; border: none; color: white; width: 100%;" onchange="window.notesView.saveCurrentNote()">
+                  <button class="btn" style="background: transparent; color: #71717A; border: none; font-size: 18px;" title="Delete note" onclick="window.notesView.deleteNote('${activeNote.id}')">🗑️</button>
+                </div>
 
-            <input type="text" id="note-title-input" class="form-input" style="font-size: 20px; font-weight: 700; background: transparent; border: none; padding: 0;" 
-                   value="${activeNote.title}" onchange="window.notesView.saveCurrentNote('${activeNote.id}')">
+                <textarea id="edit-note-content" class="form-input" style="flex: 1; min-height: 340px; background: #1C1C21; border: 1px solid #27272A; color: white; border-radius: 12px; padding: 16px; font-size: 14px; line-height: 1.6; resize: vertical;" placeholder="Write your notes here...">${activeNote.content}</textarea>
+              </div>
 
-            <textarea id="note-content-input" class="editor-textarea" 
-                      onchange="window.notesView.saveCurrentNote('${activeNote.id}')">${activeNote.content}</textarea>
-
-            <div id="ai-note-output" style="display: none; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: var(--radius-md); padding: 16px; font-size: 14px;">
-            </div>
+              <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #27272A; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 12px; color: #71717A;">Saved automatically in Local & Cloud storage</span>
+                <button class="btn" style="background: #E50914; color: white; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; cursor: pointer;" onclick="window.notesView.saveCurrentNote()">
+                  Save Note 💾
+                </button>
+              </div>
+            ` : `
+              <div style="text-align: center; padding: 60px; color: #71717A;">
+                Select a note or create a new note to start writing.
+              </div>
+            `}
           </div>
+
         </div>
+
       </div>
     `;
   }
 
+  setCategory(cat) {
+    this.selectedCategory = cat;
+    window.store.notify();
+  }
+
   async createNewNote() {
-    const res = await window.apiClient.post('/notes', {
-      title: 'Untitled Note',
-      content: '',
-      folder: 'General',
-      tags: ['general']
-    });
-    if (res.success) {
-      window.store.setState(prev => ({
-        notes: [res.note, ...prev.notes],
-        activeNoteId: res.note.id
-      }));
-    }
+    const title = prompt("Enter Note Title:") || "Untitled Note";
+    const newNote = {
+      id: `n_${Date.now()}`,
+      title,
+      category: 'study',
+      content: 'Write your notes here...',
+      updatedAt: new Date().toISOString()
+    };
+
+    window.store.setState(prev => ({
+      notes: [newNote, ...prev.notes],
+      activeNoteId: newNote.id
+    }));
+    await window.apiClient.post('/notes', newNote);
   }
 
-  async saveCurrentNote(id) {
-    const title = document.getElementById('note-title-input')?.value;
-    const content = document.getElementById('note-content-input')?.value;
-    if (!id) return;
-
-    const res = await window.apiClient.put(`/notes/${id}`, { title, content });
-    if (res.success) {
-      window.store.setState(prev => ({
-        notes: prev.notes.map(n => n.id === id ? res.note : n)
-      }));
-    }
-  }
-
-  async deleteNote(id) {
-    if (!confirm('Are you sure you want to delete this note?')) return;
-    const res = await window.apiClient.delete(`/notes/${id}`);
-    if (res.success) {
-      window.store.setState(prev => ({
-        notes: prev.notes.filter(n => n.id !== id),
-        activeNoteId: null
-      }));
-    }
-  }
-
-  async runAIAction(id, action) {
-    const output = document.getElementById('ai-note-output');
-    if (!output) return;
-    output.style.display = 'block';
-    output.innerHTML = '✦ Processing note content...';
-
-    const res = await window.apiClient.post(`/notes/${id}/ai-action`, { action });
-    if (res.success) {
-      if (action === 'study-flashcards' && Array.isArray(res.result)) {
-        if (window.studyView && Array.isArray(window.studyView.flashcards)) {
-          window.studyView.flashcards = [...res.result, ...window.studyView.flashcards];
-        }
-        output.innerHTML = `✅ <strong>Generated ${res.result.length} Active Recall Flashcards!</strong> Synced directly into <em>Study Hub</em>. <button class="btn btn-secondary" style="margin-left: 10px;" onclick="window.store.setState({ currentView: 'study' })">Open Study Hub ➔</button>`;
-      } else {
-        output.innerHTML = `<strong>Summary Output:</strong><br>${typeof res.result === 'string' ? res.result.replace(/\n/g, '<br>') : JSON.stringify(res.result)}`;
-      }
-    }
-  }
-
-  toggleVoiceRecorder() {
-    alert('🎙️ Voice Note Recording Started! Speak into your microphone... Audio transcription will attach to note.');
-  }
-
-  filterNotes(query) {
-    const container = document.getElementById('notes-list-container');
-    if (!container) return;
-    const q = (query || '').toLowerCase().trim();
-    const notes = window.store.state.notes || [];
+  async saveCurrentNote() {
     const activeNoteId = window.store.state.activeNoteId;
+    const titleInput = document.getElementById('edit-note-title');
+    const contentInput = document.getElementById('edit-note-content');
 
-    const filtered = notes.filter(n => (n.title + ' ' + (n.content || '') + ' ' + (n.folder || '')).toLowerCase().includes(q));
+    if (!activeNoteId || !titleInput || !contentInput) return;
 
-    container.innerHTML = filtered.map(n => `
-      <div class="note-item ${n.id === activeNoteId ? 'active' : ''}" onclick="window.store.setState({ activeNoteId: '${n.id}' })">
-        <div style="font-weight: 600; font-size: 14px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-          ${n.isPinned ? '📌 ' : ''}${n.title || 'Untitled Note'}
-        </div>
-        <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">
-          📁 ${n.folder || 'General'} • ${new Date(n.updatedAt || Date.now()).toLocaleDateString()}
-        </div>
-      </div>
-    `).join('');
+    const title = titleInput.value;
+    const content = contentInput.value;
+
+    const notes = window.store.state.notes.map(n => {
+      if (n.id === activeNoteId) return { ...n, title, content, updatedAt: new Date().toISOString() };
+      return n;
+    });
+
+    window.store.setState({ notes });
+    await window.apiClient.put(`/notes/${activeNoteId}`, { title, content });
   }
 
-  showVersionHistory(id) {
-    const note = window.store.state.notes.find(n => n.id === id);
-    const versions = note?.versions || [];
-    alert(`⏳ Version History for "${note.title}":\n\nTotal Snapshots: ${versions.length}\nLast Updated: ${versions[0]?.timestamp || 'Now'}`);
+  async deleteNote(noteId) {
+    const notes = window.store.state.notes.filter(n => n.id !== noteId);
+    const activeNoteId = notes.length > 0 ? notes[0].id : null;
+    window.store.setState({ notes, activeNoteId });
+    await window.apiClient.delete(`/notes/${noteId}`);
   }
 }
 

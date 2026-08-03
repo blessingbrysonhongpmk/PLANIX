@@ -1,6 +1,6 @@
 /**
- * PLANIX 4.0 REACTIVE STORE
- * Minimal State store with direct dashboard routing
+ * PLANIX REACTIVE STORE
+ * Production-Ready State Management with Real API Sync & Local Storage
  */
 
 class Store {
@@ -10,28 +10,35 @@ class Store {
       notes: [],
       journal: [],
       habits: [],
-      predictions: [],
+      routine: [],
+      goals: [],
       user: {
-        name: 'Bryson',
-        xp: 1420,
-        level: 3,
-        levelTitle: 'Focus Architect',
-        streak: 7,
+        name: 'User',
+        xp: 0,
+        level: 1,
+        levelTitle: 'Focus Starter',
+        streak: 0,
         theme: 'dark'
       },
-      currentView: 'dashboard', // Default directly to dashboard workspace
+      audioPlayer: {
+        isPlaying: false,
+        soundType: 'rain',
+        volume: 0.5
+      },
+      currentView: 'dashboard',
       activeNoteId: null,
       isAiDrawerOpen: false,
       isCommandPaletteOpen: false,
-      isMobileSidebarOpen: false,
+      isMobileSidebarOpen: false
     };
+
     this.listeners = [];
     this.loadLocalCache();
   }
 
   loadLocalCache() {
     try {
-      const cached = localStorage.getItem('planix_state');
+      const cached = localStorage.getItem('planix_v5_state');
       if (cached) {
         const parsed = JSON.parse(cached);
         this.state = { ...this.state, ...parsed };
@@ -43,11 +50,13 @@ class Store {
 
   saveLocalCache() {
     try {
-      localStorage.setItem('planix_state', JSON.stringify({
+      localStorage.setItem('planix_v5_state', JSON.stringify({
         tasks: this.state.tasks,
         notes: this.state.notes,
         journal: this.state.journal,
         habits: this.state.habits,
+        routine: this.state.routine,
+        goals: this.state.goals,
         user: this.state.user
       }));
     } catch (e) {
@@ -77,23 +86,25 @@ class Store {
   }
 
   async fetchAll() {
-    const [tasksRes, notesRes, journalRes, habitsRes, predRes, statsRes] = await Promise.all([
-      window.apiClient.get('/tasks'),
-      window.apiClient.get('/notes'),
-      window.apiClient.get('/journal'),
-      window.apiClient.get('/habits'),
-      window.apiClient.get('/ai/predictions'),
-      window.apiClient.get('/analytics/overview')
-    ]);
+    try {
+      const [tasksRes, notesRes, journalRes, habitsRes, statsRes] = await Promise.all([
+        window.apiClient.get('/tasks'),
+        window.apiClient.get('/notes'),
+        window.apiClient.get('/journal'),
+        window.apiClient.get('/habits'),
+        window.apiClient.get('/analytics/overview')
+      ]);
 
-    this.setState({
-      tasks: tasksRes.tasks || this.state.tasks,
-      notes: notesRes.notes || this.state.notes,
-      journal: journalRes.journal || this.state.journal,
-      habits: habitsRes.habits || this.state.habits,
-      predictions: predRes.predictions || this.state.predictions,
-      user: { ...this.state.user, ...(statsRes.stats || {}) }
-    });
+      this.setState(prev => ({
+        tasks: (tasksRes && tasksRes.tasks) ? tasksRes.tasks : prev.tasks,
+        notes: (notesRes && notesRes.notes) ? notesRes.notes : prev.notes,
+        journal: (journalRes && journalRes.journal) ? journalRes.journal : prev.journal,
+        habits: (habitsRes && habitsRes.habits) ? habitsRes.habits : prev.habits,
+        user: { ...prev.user, ...((statsRes && statsRes.stats) || {}) }
+      }));
+    } catch (e) {
+      console.log('Backend sync status:', e);
+    }
   }
 }
 
