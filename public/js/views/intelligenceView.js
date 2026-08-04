@@ -1,6 +1,6 @@
 /**
  * PLANIX V5 ACADEMIC INTELLIGENCE CENTER & DOCUMENT LIBRARY
- * Full-featured document uploader, Drag & Drop, Clipboard Paste, Search, and Library operations.
+ * Responsive Document Library & Drag and Drop Uploader.
  */
 
 class IntelligenceView {
@@ -11,7 +11,6 @@ class IntelligenceView {
     this.searchQuery = '';
     this.selectedSubject = 'all';
     this.selectedType = 'all';
-    this.viewMode = 'grid'; // grid, list
 
     // Paste listener setup
     if (!window._pasteListenerAttached) {
@@ -158,19 +157,22 @@ class IntelligenceView {
           font-family: 'Inter', -apple-system, sans-serif;
           background: var(--bg-main);
           min-height: 100vh;
-          padding-right: 16px;
+          width: 100%;
+          box-sizing: border-box;
         }
 
         .upload-zone {
           background: ${this.isDragging ? 'rgba(255, 45, 45, 0.05)' : 'var(--bg-card)'};
           border: 2px dashed ${this.isDragging ? 'var(--accent-red)' : 'var(--border-color)'};
           border-radius: 16px;
-          padding: 40px 20px;
+          padding: 30px 16px;
           display: flex;
           flex-direction: column;
           align-items: center;
           text-align: center;
           transition: all 0.2s ease;
+          width: 100%;
+          box-sizing: border-box;
         }
 
         .upload-zone:hover {
@@ -182,31 +184,27 @@ class IntelligenceView {
           background: var(--bg-card);
           border: 1px solid var(--border-color);
           border-radius: 12px;
-          padding: 16px;
+          padding: 14px;
           transition: transform 0.2s, box-shadow 0.2s;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
           position: relative;
-        }
-
-        .doc-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-          border-color: #33333F;
+          width: 100%;
+          box-sizing: border-box;
         }
       </style>
 
       <div class="view-container animate-fade-in intelligence-hub">
         
         <!-- PAGE HEADER -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
           <div>
-            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0 0 4px 0;">Academic Intelligence Center & Library</h1>
-            <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Upload, analyze, and manage your academic PDFs, assignments, and timetables.</p>
+            <h1 style="font-size: 22px; font-weight: 800; color: #FFF; margin: 0 0 4px 0;">Academic Intelligence Center & Library</h1>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Upload, analyze, and manage your academic PDFs and assignments.</p>
           </div>
           <div>
-            <button class="btn btn-primary" style="background: var(--accent-red); font-weight: 700; padding: 10px 18px;" onclick="document.getElementById('library-upload-input').click()">
+            <button class="btn btn-primary" style="background: var(--accent-red); font-weight: 700; padding: 10px 16px; font-size: 12px;" onclick="document.getElementById('library-upload-input').click()">
               + Upload Document
             </button>
             <input type="file" id="library-upload-input" style="display: none;" multiple onchange="window.intelligenceView.handleFileInputChange(this)">
@@ -214,52 +212,51 @@ class IntelligenceView {
         </div>
 
         <!-- UPLOAD ZONE -->
-        <div class="upload-zone" style="margin-bottom: 32px;"
+        <div class="upload-zone" style="margin-bottom: 24px;"
              ondragover="window.intelligenceView.handleDragOver(event)"
              ondragleave="window.intelligenceView.handleDragLeave(event)"
              ondrop="window.intelligenceView.handleDrop(event)">
           
           ${this.uploadingFile ? `
             <div style="width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 12px;">
-              <div style="font-size: 14px; font-weight: 700; color: #FFF;">Uploading "${this.uploadingFile.name}"...</div>
+              <div style="font-size: 13px; font-weight: 700; color: #FFF;">Uploading "${this.uploadingFile.name}"...</div>
               <div style="height: 6px; background: #0A0A0C; border-radius: 3px; overflow: hidden; border: 1px solid var(--border-color);">
                 <div style="height: 100%; width: ${this.uploadProgress}%; background: var(--accent-red); transition: width 0.1s ease;"></div>
               </div>
               <div style="font-size: 11px; color: var(--text-muted);">${this.uploadProgress}% completed</div>
             </div>
           ` : `
-            <div style="display: flex; align-items: center; gap: 16px;">
-              <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(255,45,45,0.1); color: var(--accent-red); display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center;">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,45,45,0.1); color: var(--accent-red); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;">
                 📚
               </div>
-              <div style="text-align: left;">
-                <div style="font-size: 15px; font-weight: 700; color: #FFF;">Drop academic files here, click to browse, or paste from clipboard (Ctrl+V)</div>
-                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Supported: PDF, DOCX, PPTX, PNG, JPG, ZIP (Max 100 MB)</div>
+              <div style="text-align: center;">
+                <div style="font-size: 14px; font-weight: 700; color: #FFF;">Drop files here, browse, or paste from clipboard (Ctrl+V)</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Supported: PDF, DOCX, PPTX, PNG, JPG, ZIP (Max 100 MB)</div>
               </div>
             </div>
           `}
         </div>
 
         <!-- CONTROLS & FILTERS BAR -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; background: var(--bg-card); padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; background: var(--bg-card); padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border-color);">
           
           <!-- Search Input -->
-          <div style="position: relative; flex: 1; max-width: 320px;">
-            <input type="text" class="form-input" placeholder="Search by title or subject..." style="padding-left: 36px; font-size: 13px; background: #0A0A0C; border: 1px solid #22222A;" value="${this.searchQuery}" oninput="window.intelligenceView.searchQuery = this.value; window.store.notify()">
+          <div style="position: relative; flex: 1; min-width: 200px;">
+            <input type="text" class="form-input" placeholder="Search title or subject..." style="padding-left: 36px; font-size: 12px; background: #0A0A0C; border: 1px solid #22222A; width: 100%;" value="${this.searchQuery}" oninput="window.intelligenceView.searchQuery = this.value; window.store.notify()">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-muted)" stroke-width="2" style="position: absolute; left: 12px; top: 10px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </div>
 
           <!-- Subject & Type Filters -->
-          <div style="display: flex; gap: 12px; align-items: center;">
-            <select class="form-input" style="font-size: 12px; background: #0A0A0C; border: 1px solid #22222A; color: #FFF; padding: 6px 12px; width: auto;" onchange="window.intelligenceView.selectedSubject = this.value; window.store.notify()">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <select class="form-input" style="font-size: 11px; background: #0A0A0C; border: 1px solid #22222A; color: #FFF; padding: 6px 10px; width: auto;" onchange="window.intelligenceView.selectedSubject = this.value; window.store.notify()">
               <option value="all">All Subjects</option>
               ${subjectsList.map(s => `<option value="${s}" ${this.selectedSubject === s ? 'selected' : ''}>${s}</option>`).join('')}
             </select>
 
             <div style="display: flex; gap: 4px; background: #0A0A0C; padding: 3px; border-radius: 6px; border: 1px solid #22222A;">
-              <button class="btn" style="padding: 4px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; background: ${this.selectedType === 'all' ? 'var(--accent-red)' : 'transparent'}; color: ${this.selectedType === 'all' ? '#FFF' : 'var(--text-muted)'}; border: none;" onclick="window.intelligenceView.selectedType = 'all'; window.store.notify()">All (${(state.documents || []).length})</button>
-              <button class="btn" style="padding: 4px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; background: ${this.selectedType === 'favorites' ? 'var(--accent-red)' : 'transparent'}; color: ${this.selectedType === 'favorites' ? '#FFF' : 'var(--text-muted)'}; border: none;" onclick="window.intelligenceView.selectedType = 'favorites'; window.store.notify()">Starred</button>
-              <button class="btn" style="padding: 4px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; background: ${this.selectedType === 'pinned' ? 'var(--accent-red)' : 'transparent'}; color: ${this.selectedType === 'pinned' ? '#FFF' : 'var(--text-muted)'}; border: none;" onclick="window.intelligenceView.selectedType = 'pinned'; window.store.notify()">Pinned</button>
+              <button class="btn" style="padding: 4px 10px; font-size: 11px; font-weight: 600; border-radius: 4px; background: ${this.selectedType === 'all' ? 'var(--accent-red)' : 'transparent'}; color: ${this.selectedType === 'all' ? '#FFF' : 'var(--text-muted)'}; border: none;" onclick="window.intelligenceView.selectedType = 'all'; window.store.notify()">All (${(state.documents || []).length})</button>
+              <button class="btn" style="padding: 4px 10px; font-size: 11px; font-weight: 600; border-radius: 4px; background: ${this.selectedType === 'favorites' ? 'var(--accent-red)' : 'transparent'}; color: ${this.selectedType === 'favorites' ? '#FFF' : 'var(--text-muted)'}; border: none;" onclick="window.intelligenceView.selectedType = 'favorites'; window.store.notify()">Starred</button>
             </div>
           </div>
 
@@ -267,58 +264,51 @@ class IntelligenceView {
 
         <!-- DOCUMENT GRID -->
         ${docs.length === 0 ? `
-          <div class="card" style="padding: 60px 20px; text-align: center; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;">
-            <div style="font-size: 36px; margin-bottom: 12px;">📂</div>
-            <div style="font-size: 16px; font-weight: 700; color: #FFF;">No documents found</div>
-            <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Try broadening your search or upload a new PDF.</div>
+          <div class="card" style="padding: 50px 20px; text-align: center; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px;">
+            <div style="font-size: 32px; margin-bottom: 12px;">📂</div>
+            <div style="font-size: 15px; font-weight: 700; color: #FFF;">No documents found</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Try broadening your search or upload a new file.</div>
           </div>
         ` : `
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-bottom: 40px;">
+          <div class="ah-doc-grid" style="padding-bottom: 40px;">
             ${docs.map(d => `
               <div class="doc-card">
                 
-                <!-- Pin / Favorite Badges -->
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                  <div style="display: flex; gap: 6px; align-items: center;">
-                    <span style="font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; background: var(--accent-red); color: #FFF; text-transform: uppercase;">${d.fileType || 'PDF'}</span>
-                    ${d.status === 'analyzed' ? `<span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: rgba(16,185,129,0.15); color: #10B981; border: 1px solid rgba(16,185,129,0.3);">✓ AI Analyzed</span>` : ''}
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                  <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                    <span style="font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; background: var(--accent-red); color: #FFF; text-transform: uppercase;">${d.fileType || 'PDF'}</span>
+                    ${d.status === 'analyzed' ? `<span style="font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: rgba(16,185,129,0.15); color: #10B981; border: 1px solid rgba(16,185,129,0.3);">✓ Analyzed</span>` : ''}
                   </div>
-                  <div style="display: flex; gap: 6px;">
-                    <button class="btn btn-ghost" style="padding: 2px; color: ${d.isFavorite ? '#FFD700' : 'var(--text-muted)'};" onclick="window.intelligenceView.toggleFavorite('${d.id}')" title="Star Document">
+                  <div style="display: flex; gap: 4px;">
+                    <button class="btn btn-ghost" style="padding: 2px; color: ${d.isFavorite ? '#FFD700' : 'var(--text-muted)'}; min-height: auto;" onclick="window.intelligenceView.toggleFavorite('${d.id}')" title="Star">
                       ★
                     </button>
-                    <button class="btn btn-ghost" style="padding: 2px; color: ${d.isPinned ? 'var(--accent-red)' : 'var(--text-muted)'};" onclick="window.intelligenceView.togglePin('${d.id}')" title="Pin Document">
+                    <button class="btn btn-ghost" style="padding: 2px; color: ${d.isPinned ? 'var(--accent-red)' : 'var(--text-muted)'}; min-height: auto;" onclick="window.intelligenceView.togglePin('${d.id}')" title="Pin">
                       📌
                     </button>
                   </div>
                 </div>
 
-                <!-- Title & Metadata -->
-                <div style="margin-bottom: 16px;">
-                  <div style="font-size: 14px; font-weight: 700; color: #FFF; line-height: 1.4; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                <div style="margin-bottom: 14px;">
+                  <div style="font-size: 13px; font-weight: 700; color: #FFF; line-height: 1.3; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                     ${d.title}
                   </div>
-                  <div style="font-size: 11px; color: var(--text-muted);">${d.subject || 'General Academic'} • ${d.pages || 10} Pages • ${d.fileSize}</div>
+                  <div style="font-size: 10px; color: var(--text-muted);">${d.subject || 'General'} • ${d.pages || 10} Pages • ${d.fileSize}</div>
                 </div>
 
-                <!-- Card Action Toolbar -->
-                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #22222A; padding-top: 12px; margin-top: auto;">
-                  <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; font-weight: 700;" onclick="window.documentViewerModal.open('${d.id}')">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #22222A; padding-top: 10px; margin-top: auto; flex-wrap: wrap; gap: 6px;">
+                  <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 10px; font-weight: 700;" onclick="window.documentViewerModal.open('${d.id}')">
                       👁️ Open
                     </button>
-                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; font-weight: 700; background: var(--accent-red);" onclick="window.analysisModal.open('${d.id}')">
+                    <button class="btn btn-primary" style="padding: 4px 10px; font-size: 10px; font-weight: 700; background: var(--accent-red);" onclick="window.analysisModal.open('${d.id}')">
                       🤖 Analyze
                     </button>
                   </div>
 
                   <div style="display: flex; gap: 4px;">
-                    <button class="btn btn-ghost" style="padding: 4px; color: var(--text-muted);" onclick="window.intelligenceView.renameDoc('${d.id}')" title="Rename">
-                      ✏️
-                    </button>
-                    <button class="btn btn-ghost" style="padding: 4px; color: var(--text-muted);" onclick="window.intelligenceView.deleteDoc('${d.id}')" title="Delete">
-                      🗑️
-                    </button>
+                    <button class="btn btn-ghost" style="padding: 4px; color: var(--text-muted); min-height: auto;" onclick="window.intelligenceView.renameDoc('${d.id}')" title="Rename">✏️</button>
+                    <button class="btn btn-ghost" style="padding: 4px; color: var(--text-muted); min-height: auto;" onclick="window.intelligenceView.deleteDoc('${d.id}')" title="Delete">🗑️</button>
                   </div>
                 </div>
 
