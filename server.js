@@ -56,7 +56,7 @@ app.get('*', (_req, res) => {
 
 // Start Server
 if (require.main === module) {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`
 ╔════════════════════════════════════════════════╗
 ║                                                ║
@@ -68,6 +68,15 @@ if (require.main === module) {
 ║                                                ║
 ╚════════════════════════════════════════════════╝
     `);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`\n⚠️ Port ${PORT} is already in use. Please close existing server processes or run on a different PORT.`);
+      process.exit(1);
+    } else {
+      console.error('Server error:', err);
+    }
   });
 }
 
