@@ -1,115 +1,77 @@
 /**
- * PLANIX HABITS VIEW
- * Habit Tracker with streak counters (🔥), simple checks, and instant API CRUD
+ * PLANIX HABITS VIEW — One-click habit completion, streak tracking
  */
 
 class HabitsView {
   render(state) {
+    const habits = state.habits || [];
+    const doneCount = habits.filter(h => h.completedToday).length;
+
     return `
-      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1000px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-          <div>
-            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
-              <span>🔁</span> Daily Habit Tracker
-            </h1>
-            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
-              Build powerful daily habits step by step and increase your daily streak!
-            </p>
+      <div class="view-container animate-fade-in">
+        <div class="page-header">
+          <div class="page-header-info">
+            <h1 class="page-title">Habits</h1>
+            <p class="page-description">Build consistent daily habits. One click to mark done. Streaks keep you motivated.</p>
           </div>
-
-          <button class="btn" style="background: #E50914; color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 700; cursor: pointer;" onclick="window.habitsView.showAddHabitModal()">
-            + New Habit
-          </button>
-        </div>
-
-        <!-- Add Habit Inline Form -->
-        <div id="add-habit-container" style="display: none; background: #141417; border: 1px solid #27272A; border-radius: 14px; padding: 16px; margin-bottom: 24px;">
-          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-            <input type="text" id="habit-name-input" class="form-input" placeholder="Habit name e.g. Drink 2L water / 30m Reading..." style="flex: 1; background: #1C1C21; border-color: #3F3F46; color: white; padding: 10px; border-radius: 8px;">
-            <button class="btn" style="background: #E50914; color: white; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600;" onclick="window.habitsView.saveNewHabit()">Save Habit</button>
-            <button class="btn" style="background: #27272A; color: white; border: none; border-radius: 8px; padding: 10px 14px;" onclick="window.habitsView.hideAddHabitModal()">Cancel</button>
+          <div class="page-actions">
+            ${habits.length > 0 ? `<span style="font-size: 13px; color: var(--text-secondary); margin-right: 8px;">${doneCount}/${habits.length} done today</span>` : ''}
+            <button class="btn btn-primary" onclick="window.habitsView.addHabit()">+ New Habit</button>
           </div>
         </div>
 
-        <!-- Habit Cards Grid -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-          ${state.habits.map(habit => `
-            <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                  <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0;">${habit.name}</h3>
-                  <button class="btn" style="background: transparent; color: #71717A; border: none; font-size: 14px;" title="Delete habit" onclick="window.habitsView.deleteHabit('${habit.id}')">🗑️</button>
-                </div>
-                <div style="font-size: 13px; color: #F5B700; font-weight: 600; margin-top: 6px;">
-                  🔥 ${habit.streak} Day Streak
-                </div>
-              </div>
-
-              <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #27272A; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 13px; color: ${habit.completedToday ? '#10B981' : '#A1A1AA'};">
-                  ${habit.completedToday ? '✅ Done Today!' : '⏳ Today Pending'}
-                </span>
-                <button class="btn" style="background: ${habit.completedToday ? '#10B981' : '#E50914'}; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-weight: 700; cursor: pointer;" onclick="window.habitsView.toggleHabit('${habit.id}')">
-                  ${habit.completedToday ? 'Completed ✔' : 'Mark Done'}
-                </button>
-              </div>
+        ${habits.length === 0 ? `
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-state-icon">🔁</div>
+              <div class="empty-state-title">No habits yet</div>
+              <div class="empty-state-desc">Small daily actions lead to big results. Start with one simple habit like "Read for 15 minutes".</div>
+              <button class="btn btn-primary" onclick="window.habitsView.addHabit()">Create Your First Habit</button>
             </div>
-          `).join('')}
-        </div>
-
+          </div>
+        ` : `
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${habits.map(h => `
+              <div class="card" style="padding: var(--spacing-4); display: flex; align-items: center; gap: 16px; transition: background var(--transition-fast);">
+                <button class="btn ${h.completedToday ? 'btn-primary' : 'btn-secondary'}" style="width: 44px; height: 44px; padding: 0; border-radius: var(--radius-md); font-size: 18px; flex-shrink: 0;" onclick="window.habitsView.toggleHabit('${h.id}')" aria-label="${h.completedToday ? 'Completed' : 'Mark as done'}">
+                  ${h.completedToday ? '✓' : ''}
+                </button>
+                <div style="flex: 1;">
+                  <div style="font-size: 15px; font-weight: 600; color: ${h.completedToday ? 'var(--text-tertiary)' : 'var(--text-primary)'}; text-decoration: ${h.completedToday ? 'line-through' : 'none'};">${h.name}</div>
+                  <div style="font-size: 12px; color: var(--accent-secondary); font-weight: 600; margin-top: 2px;">🔥 ${h.streak || 0} day streak</div>
+                </div>
+                <button class="btn btn-icon" onclick="window.habitsView.deleteHabit('${h.id}')" title="Delete habit"><svg viewBox="0 0 24 24" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div>
+            `).join('')}
+          </div>
+        `}
       </div>
     `;
   }
 
-  showAddHabitModal() {
-    const el = document.getElementById('add-habit-container');
-    if (el) el.style.display = 'block';
+  addHabit() {
+    const name = prompt('Habit name (e.g. Read 15 minutes, Exercise, Code 1 problem):');
+    if (!name) return;
+    window.store.setState(prev => ({ habits: [...prev.habits, { id: `h_${Date.now()}`, name, streak: 0, completedToday: false }] }));
+    if (window.showToast) window.showToast('Habit created!', 'success');
   }
 
-  hideAddHabitModal() {
-    const el = document.getElementById('add-habit-container');
-    if (el) el.style.display = 'none';
-  }
-
-  async saveNewHabit() {
-    const input = document.getElementById('habit-name-input');
-    if (!input || !input.value.trim()) return;
-
-    const name = input.value.trim();
-    input.value = '';
-    this.hideAddHabitModal();
-
-    const newHabit = {
-      id: `h_${Date.now()}`,
-      name,
-      streak: 1,
-      completedToday: true,
-      category: 'personal'
-    };
-
-    window.store.setState(prev => ({ habits: [...prev.habits, newHabit] }));
-    await window.apiClient.post('/habits', newHabit);
-  }
-
-  async toggleHabit(habitId) {
+  toggleHabit(id) {
     const habits = window.store.state.habits.map(h => {
-      if (h.id === habitId) {
-        const completedToday = !h.completedToday;
-        const streak = completedToday ? h.streak + 1 : Math.max(0, h.streak - 1);
-        return { ...h, completedToday, streak };
+      if (h.id === id) {
+        const done = !h.completedToday;
+        return { ...h, completedToday: done, streak: done ? (h.streak || 0) + 1 : Math.max(0, (h.streak || 0) - 1) };
       }
       return h;
     });
     window.store.setState({ habits });
-    await window.apiClient.put(`/habits/${habitId}`, { completedToday: true });
+    const habit = habits.find(h => h.id === id);
+    if (habit?.completedToday && window.showToast) window.showToast('Habit done! 🔥', 'success');
   }
 
-  async deleteHabit(habitId) {
-    const habits = window.store.state.habits.filter(h => h.id !== habitId);
-    window.store.setState({ habits });
-    await window.apiClient.delete(`/habits/${habitId}`);
+  deleteHabit(id) {
+    if (!confirm('Remove this habit?')) return;
+    window.store.setState({ habits: window.store.state.habits.filter(h => h.id !== id) });
   }
 }
 

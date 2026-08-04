@@ -1,6 +1,5 @@
 /**
- * PLANIX PROJECTS WORKSPACE VIEW
- * Engineering software/hardware projects with tech stack badges & GitHub integration
+ * PLANIX PROJECTS VIEW — Engineering projects with tech stack and progress
  */
 
 class ProjectsView {
@@ -8,97 +7,71 @@ class ProjectsView {
     const projects = state.projects || [];
 
     return `
-      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1100px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-          <div>
-            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
-              <span>🚀</span> Projects Workspace
-            </h1>
-            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
-              Manage software, hardware, and AI project builds with GitHub repo links and milestone tracking.
-            </p>
+      <div class="view-container animate-fade-in">
+        <div class="page-header">
+          <div class="page-header-info">
+            <h1 class="page-title">Projects</h1>
+            <p class="page-description">Track your software, hardware, and AI projects with milestone progress.</p>
           </div>
-
-          <button class="btn" style="background: linear-gradient(135deg, #3B82F6, #8B5CF6); color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 700; cursor: pointer;" onclick="window.projectsView.addProject()">
-            + New Project
-          </button>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="window.projectsView.addProject()">+ New Project</button>
+          </div>
         </div>
 
-        <!-- Project Cards Grid -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px;">
-          ${projects.map(proj => `
-            <div style="background: #18181B; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                  <h3 style="font-size: 18px; font-weight: 800; color: #FFF; margin: 0;">${proj.title}</h3>
-                  <button class="btn" style="background: transparent; color: #71717A; border: none;" onclick="window.projectsView.deleteProject('${proj.id}')">🗑️</button>
+        ${projects.length === 0 ? `
+          <div class="card"><div class="empty-state">
+            <div class="empty-state-icon">🚀</div>
+            <div class="empty-state-title">No projects yet</div>
+            <div class="empty-state-desc">Add your first engineering project to track progress, tech stack, and GitHub links.</div>
+            <button class="btn btn-primary" onclick="window.projectsView.addProject()">Create Project</button>
+          </div></div>
+        ` : `
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px;">
+            ${projects.map(p => `
+              <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <h3 style="font-size: 17px; font-weight: 700; color: var(--text-primary); margin: 0; flex: 1;">${p.title}</h3>
+                    <button class="btn btn-icon" onclick="window.projectsView.deleteProject('${p.id}')"><svg viewBox="0 0 24 24" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                  </div>
+                  <p style="font-size: 13px; color: var(--text-secondary); margin: 8px 0 12px; line-height: 1.5;">${p.description || ''}</p>
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px;">
+                    ${(p.techStack || []).map(t => `<span class="badge badge-study">${t}</span>`).join('')}
+                  </div>
                 </div>
-                
-                <p style="font-size: 13px; color: #A1A1AA; margin: 8px 0 14px 0; line-height: 1.5;">${proj.description}</p>
-                
-                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
-                  ${(proj.techStack || ['Python', 'React']).map(tech => `
-                    <span style="font-size: 11px; padding: 3px 8px; border-radius: 6px; background: rgba(59,130,246,0.15); color: #3B82F6; font-weight: 600;">${tech}</span>
-                  `).join('')}
-                </div>
-              </div>
-
-              <div>
-                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #A1A1AA; margin-bottom: 6px;">
-                  <span>Milestone Progress</span>
-                  <span style="color: #3B82F6; font-weight: 700;">${proj.progress || 0}%</span>
-                </div>
-                <div style="width: 100%; height: 6px; background: #121215; border-radius: 4px; overflow: hidden; margin-bottom: 14px;">
-                  <div style="width: ${proj.progress || 0}%; height: 100%; background: linear-gradient(90deg, #3B82F6, #8B5CF6); border-radius: 4px;"></div>
-                </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <a href="${proj.github || '#'}" target="_blank" style="color: #8B5CF6; font-size: 12px; font-weight: 600; text-decoration: none;">
-                    GitHub Repo ↗
-                  </a>
-                  <button class="btn" style="background: #121215; border: 1px solid #27272A; color: white; border-radius: 6px; padding: 6px 12px; font-size: 12px;" onclick="window.projectsView.incrementProgress('${proj.id}')">
-                    + Progress
-                  </button>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">
+                    <span>Progress</span><span style="font-weight: 700; color: var(--accent-primary);">${p.progress || 0}%</span>
+                  </div>
+                  <div class="progress-track" style="margin-bottom: 12px;"><div class="progress-fill" style="width: ${p.progress || 0}%;"></div></div>
+                  <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary" style="flex: 1; font-size: 12px;" onclick="window.projectsView.updateProgress('${p.id}')">+ Progress</button>
+                    ${p.github ? `<a href="${p.github}" target="_blank" class="btn btn-ghost" style="font-size: 12px;">GitHub ↗</a>` : ''}
+                  </div>
                 </div>
               </div>
-            </div>
-          `).join('')}
-        </div>
-
+            `).join('')}
+          </div>
+        `}
       </div>
     `;
   }
 
   addProject() {
-    const title = prompt("Enter Project Title (e.g. AI Autonomous Agent Framework):");
+    const title = prompt('Project name:');
     if (!title) return;
-    const description = prompt("Enter short description:") || "AI/ML Full stack application build";
-
-    const newProj = {
-      id: `prj_${Date.now()}`,
-      title,
-      description,
-      techStack: ['Python', 'PyTorch', 'React'],
-      progress: 25,
-      github: 'https://github.com'
-    };
-
-    window.store.setState(prev => ({ projects: [...prev.projects, newProj] }));
+    const description = prompt('Short description:') || '';
+    window.store.setState(prev => ({ projects: [...prev.projects, { id: `prj_${Date.now()}`, title, description, techStack: ['Python', 'React'], progress: 0, github: '' }] }));
   }
 
-  incrementProgress(id) {
-    const projects = window.store.state.projects.map(p => {
-      if (p.id === id) return { ...p, progress: Math.min(100, (p.progress || 0) + 15) };
-      return p;
-    });
+  updateProgress(id) {
+    const projects = window.store.state.projects.map(p => p.id === id ? { ...p, progress: Math.min(100, (p.progress || 0) + 15) } : p);
     window.store.setState({ projects });
   }
 
   deleteProject(id) {
-    const projects = window.store.state.projects.filter(p => p.id !== id);
-    window.store.setState({ projects });
+    if (!confirm('Delete this project?')) return;
+    window.store.setState({ projects: window.store.state.projects.filter(p => p.id !== id) });
   }
 }
 

@@ -1,74 +1,68 @@
 /**
- * PLANIX ANALYTICS VIEW
- * Progress overview, streak counters, completion percentages & XP badges
+ * PLANIX ANALYTICS VIEW — Productivity trends and insights
  */
 
 class AnalyticsView {
   render(state) {
-    const totalTasks = state.tasks.length;
-    const completedTasks = state.tasks.filter(t => t.completed).length;
-    const taskCompletionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    const tasks = state.tasks || [];
+    const habits = state.habits || [];
+    const goals = state.goals || [];
+    const done = tasks.filter(t => t.completed).length;
+    const total = tasks.length;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    const habitsDone = habits.filter(h => h.completedToday).length;
 
     return `
-      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1000px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-          <div>
-            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
-              <span>📊</span> My Progress & Analytics
-            </h1>
-            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
-              Track your task completion %, habit streaks, and level progression over time.
-            </p>
+      <div class="view-container animate-fade-in">
+        <div class="page-header">
+          <div class="page-header-info">
+            <h1 class="page-title">Analytics</h1>
+            <p class="page-description">See your productivity trends, habit consistency, and goal progress at a glance.</p>
           </div>
         </div>
 
-        <!-- Big Progress Cards Grid -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-          
-          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
-            <div style="font-size: 12px; color: #A1A1AA; text-transform: uppercase; font-weight: 700;">Task Completion Rate</div>
-            <div style="font-size: 36px; font-weight: 900; color: #E50914; margin: 8px 0;">${taskCompletionRate}%</div>
-            <div style="font-size: 13px; color: #71717A;">${completedTasks} of ${totalTasks} tasks completed</div>
+        <!-- Overview Stats -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px;">
+          <div class="card" style="text-align: center; padding: var(--spacing-5);">
+            <div style="font-size: 28px; font-weight: 800; color: var(--accent-primary);">${done}/${total}</div>
+            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 2px;">Tasks Completed</div>
+            <div class="progress-track" style="margin-top: 10px;"><div class="progress-fill" style="width: ${pct}%;"></div></div>
           </div>
-
-          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
-            <div style="font-size: 12px; color: #A1A1AA; text-transform: uppercase; font-weight: 700;">Active Daily Streak</div>
-            <div style="font-size: 36px; font-weight: 900; color: #F5B700; margin: 8px 0;">🔥 ${state.user.streak} Days</div>
-            <div style="font-size: 13px; color: #71717A;">Consistently completing tasks daily</div>
+          <div class="card" style="text-align: center; padding: var(--spacing-5);">
+            <div style="font-size: 28px; font-weight: 800; color: var(--color-success);">${habitsDone}/${habits.length}</div>
+            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 2px;">Habits Today</div>
           </div>
-
-          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
-            <div style="font-size: 12px; color: #A1A1AA; text-transform: uppercase; font-weight: 700;">Total XP Points</div>
-            <div style="font-size: 36px; font-weight: 900; color: #10B981; margin: 8px 0;">⚡ ${state.user.xp} XP</div>
-            <div style="font-size: 13px; color: #71717A;">Level ${state.user.level} • ${state.user.levelTitle}</div>
+          <div class="card" style="text-align: center; padding: var(--spacing-5);">
+            <div style="font-size: 28px; font-weight: 800; color: var(--accent-secondary);">${goals.length}</div>
+            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 2px;">Active Goals</div>
           </div>
-
-        </div>
-
-        <!-- Badges & Achievements -->
-        <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 24px;">
-          <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0 0 16px 0;">Earned Badges</h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-            <div style="background: #1C1C21; border: 1px solid #27272A; border-radius: 12px; padding: 16px; text-align: center;">
-              <div style="font-size: 32px; margin-bottom: 6px;">🏅</div>
-              <div style="font-size: 14px; font-weight: 700; color: #FFF;">Focus Champion</div>
-              <div style="font-size: 11px; color: #71717A; margin-top: 2px;">7-Day Streak Achieved</div>
-            </div>
-            <div style="background: #1C1C21; border: 1px solid #27272A; border-radius: 12px; padding: 16px; text-align: center;">
-              <div style="font-size: 32px; margin-bottom: 6px;">📚</div>
-              <div style="font-size: 14px; font-weight: 700; color: #FFF;">Study Master</div>
-              <div style="font-size: 11px; color: #71717A; margin-top: 2px;">Completed 10 Focus Timers</div>
-            </div>
-            <div style="background: #1C1C21; border: 1px solid #27272A; border-radius: 12px; padding: 16px; text-align: center;">
-              <div style="font-size: 32px; margin-bottom: 6px;">💧</div>
-              <div style="font-size: 14px; font-weight: 700; color: #FFF;">Health Booster</div>
-              <div style="font-size: 11px; color: #71717A; margin-top: 2px;">Hydration Habit 5 Days</div>
-            </div>
+          <div class="card" style="text-align: center; padding: var(--spacing-5);">
+            <div style="font-size: 28px; font-weight: 800; color: var(--accent-indigo);">🔥 ${state.user.streak || 0}</div>
+            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 2px;">Day Streak</div>
           </div>
         </div>
 
+        <!-- Goal Progress -->
+        <div class="card" style="padding: var(--spacing-5);">
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0 0 16px;">Goal Progress</h3>
+          ${goals.length === 0 ? `
+            <div class="empty-state" style="padding: 24px;">
+              <div class="empty-state-icon">📊</div>
+              <div class="empty-state-title">No goals to analyze</div>
+              <div class="empty-state-desc">Create goals first to see progress charts here.</div>
+            </div>
+          ` : `
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              ${goals.map(g => `
+                <div style="display: flex; align-items: center; gap: 14px; padding: 12px; background: var(--bg-input); border-radius: var(--radius-md);">
+                  <span style="flex: 1; font-size: 14px; font-weight: 500; color: var(--text-primary);">${g.title}</span>
+                  <span style="font-size: 13px; font-weight: 700; color: ${(g.progress || 0) >= 80 ? 'var(--color-success)' : 'var(--accent-primary)'}; min-width: 42px; text-align: right;">${g.progress || 0}%</span>
+                  <div class="progress-track" style="width: 120px;"><div class="progress-fill" style="width: ${g.progress || 0}%;"></div></div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
       </div>
     `;
   }

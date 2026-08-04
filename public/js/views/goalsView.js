@@ -1,6 +1,5 @@
 /**
- * PLANIX GOALS & MILESTONES VIEW
- * Long-term Engineering & Competitive Exam Goal Tracker
+ * PLANIX GOALS VIEW — Long-term goal tracker with milestones and deadlines
  */
 
 class GoalsView {
@@ -8,84 +7,75 @@ class GoalsView {
     const goals = state.goals || [];
 
     return `
-      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1100px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-          <div>
-            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
-              <span>🎯</span> Goals & Milestones
-            </h1>
-            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
-              Set long-term engineering targets, track milestone progress, and achieve your career vision.
-            </p>
+      <div class="view-container animate-fade-in">
+        <div class="page-header">
+          <div class="page-header-info">
+            <h1 class="page-title">Goals</h1>
+            <p class="page-description">Set long-term targets, track milestone progress, and stay on course.</p>
           </div>
-
-          <button class="btn" style="background: linear-gradient(135deg, #3B82F6, #8B5CF6); color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 700; cursor: pointer;" onclick="window.goalsView.addGoal()">
-            + Create Long-Term Goal
-          </button>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="window.goalsView.addGoal()">+ Create Goal</button>
+          </div>
         </div>
 
-        <!-- Goals Cards Grid -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
-          ${goals.map(goal => `
-            <div style="background: #18181B; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                  <h3 style="font-size: 18px; font-weight: 800; color: #FFF; margin: 0;">${goal.title}</h3>
-                  <button class="btn" style="background: transparent; color: #71717A; border: none;" onclick="window.goalsView.deleteGoal('${goal.id}')">🗑️</button>
-                </div>
-                <div style="font-size: 12px; color: #A1A1AA; margin-top: 6px;">Target Deadline: ${goal.targetDate || '2026-12-31'}</div>
-              </div>
-
-              <div style="margin-top: 20px;">
-                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #A1A1AA; margin-bottom: 6px;">
-                  <span>Goal Completion</span>
-                  <span style="color: #3B82F6; font-weight: 700;">${goal.progress || 0}%</span>
-                </div>
-                <div style="width: 100%; height: 8px; background: #121215; border-radius: 4px; overflow: hidden; margin-bottom: 14px;">
-                  <div style="width: ${goal.progress || 0}%; height: 100%; background: linear-gradient(90deg, #3B82F6, #8B5CF6); border-radius: 4px;"></div>
-                </div>
-
-                <button class="btn" style="width: 100%; background: #121215; border: 1px solid #27272A; color: white; border-radius: 8px; padding: 8px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="window.goalsView.updateProgress('${goal.id}')">
-                  + Increment Milestone Progress
-                </button>
-              </div>
+        ${goals.length === 0 ? `
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-state-icon">🎯</div>
+              <div class="empty-state-title">No goals yet</div>
+              <div class="empty-state-desc">Goals give your daily work direction. Create your first goal to start tracking progress toward something meaningful.</div>
+              <button class="btn btn-primary" onclick="window.goalsView.addGoal()">Create Your First Goal</button>
             </div>
-          `).join('')}
-        </div>
-
+          </div>
+        ` : `
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px;">
+            ${goals.map(g => `
+              <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                    <h3 style="font-size: 17px; font-weight: 700; color: var(--text-primary); margin: 0; flex: 1;">${g.title}</h3>
+                    <button class="btn btn-icon" onclick="window.goalsView.deleteGoal('${g.id}')" title="Delete goal"><svg viewBox="0 0 24 24" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                  </div>
+                  <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 14px;">Deadline: ${g.targetDate || 'Not set'}</div>
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">
+                    <span>Progress</span>
+                    <span style="font-weight: 700; color: ${(g.progress || 0) >= 80 ? 'var(--color-success)' : 'var(--accent-primary)'};">${g.progress || 0}%</span>
+                  </div>
+                  <div class="progress-track" style="margin-bottom: 14px;">
+                    <div class="progress-fill" style="width: ${g.progress || 0}%;"></div>
+                  </div>
+                  <button class="btn btn-secondary" style="width: 100%; font-size: 13px;" onclick="window.goalsView.updateProgress('${g.id}')">+ Update Progress</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `}
       </div>
     `;
   }
 
   addGoal() {
-    const title = prompt("Goal Title (e.g. Get Placed at Microsoft / Crack GATE Exam):");
+    const title = prompt('What is your goal? (e.g. Get placed at Google, Score 9.0 CGPA)');
     if (!title) return;
-    const targetDate = prompt("Target Date (YYYY-MM-DD):") || "2026-12-31";
-
-    const newGoal = {
-      id: `g_${Date.now()}`,
-      title,
-      targetDate,
-      progress: 25
-    };
-
-    window.store.setState(prev => ({ goals: [...prev.goals, newGoal] }));
-    if (window.showToast) window.showToast("New goal created!", "success");
+    const targetDate = prompt('Target deadline (YYYY-MM-DD):') || '';
+    window.store.setState(prev => ({ goals: [...prev.goals, { id: `g_${Date.now()}`, title, targetDate, progress: 0 }] }));
+    if (window.showToast) window.showToast('Goal created!', 'success');
   }
 
   updateProgress(id) {
-    const goals = window.store.state.goals.map(g => {
-      if (g.id === id) return { ...g, progress: Math.min(100, (g.progress || 0) + 15) };
-      return g;
-    });
+    const val = prompt('Enter new progress percentage (0-100):');
+    if (val === null) return;
+    const num = Math.min(100, Math.max(0, parseInt(val) || 0));
+    const goals = window.store.state.goals.map(g => g.id === id ? { ...g, progress: num } : g);
     window.store.setState({ goals });
+    if (num >= 100 && window.showToast) window.showToast('🎉 Goal completed! Amazing!', 'success');
   }
 
   deleteGoal(id) {
-    const goals = window.store.state.goals.filter(g => g.id !== id);
-    window.store.setState({ goals });
+    if (!confirm('Delete this goal? This cannot be undone.')) return;
+    window.store.setState({ goals: window.store.state.goals.filter(g => g.id !== id) });
   }
 }
 

@@ -1,57 +1,64 @@
 /**
- * PLANIX CALENDAR VIEW (நாட்காட்டி)
- * Monthly schedule grid showing tasks & habits by date
+ * PLANIX CALENDAR VIEW — Events, deadlines, and schedule
  */
 
 class CalendarView {
   render(state) {
-    const today = new Date();
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const currentMonthStr = `${monthNames[today.getMonth()]} ${today.getFullYear()}`;
+    const events = state.calendarEvents || [];
+    // Combine calendar events, goal deadlines, and placement dates
+    const allItems = [
+      ...events,
+      ...(state.goals || []).filter(g => g.targetDate).map(g => ({ id: g.id, title: `Goal: ${g.title}`, date: g.targetDate, type: 'goal' })),
+      ...(state.placements || []).filter(p => p.date).map(p => ({ id: p.id, title: `Applied: ${p.company}`, date: p.date, type: 'placement' }))
+    ].sort((a, b) => new Date(a.date) - new Date(b.date));
 
     return `
-      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1000px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-          <div>
-            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
-              <span>📅</span> Calendar & Schedule (நாட்காட்டி)
-            </h1>
-            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
-              View your monthly scheduled tasks and habit streak logs.
-            </p>
+      <div class="view-container animate-fade-in">
+        <div class="page-header">
+          <div class="page-header-info">
+            <h1 class="page-title">Calendar</h1>
+            <p class="page-description">Keep track of your events, goal deadlines, and placement schedules.</p>
           </div>
-
-          <div style="font-size: 18px; font-weight: 800; color: #E50914; background: #141417; padding: 10px 18px; border-radius: 12px; border: 1px solid #27272A;">
-            ${currentMonthStr}
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="window.calendarView.addEvent()">+ Add Event</button>
           </div>
         </div>
 
-        <!-- Calendar Grid -->
-        <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
-          <!-- Days Header -->
-          <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 700; font-size: 12px; color: #71717A; text-transform: uppercase; padding-bottom: 14px; border-bottom: 1px solid #27272A;">
-            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-          </div>
-
-          <!-- Days Cells -->
-          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 14px;">
-            ${Array.from({ length: 31 }, (_, i) => {
-              const dayNum = i + 1;
-              const isToday = dayNum === today.getDate();
-              return `
-                <div style="min-height: 70px; background: ${isToday ? 'rgba(229,9,20,0.15)' : '#1C1C21'}; border: 1px solid ${isToday ? '#E50914' : '#27272A'}; border-radius: 10px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between;">
-                  <div style="font-size: 13px; font-weight: 700; color: ${isToday ? '#E50914' : '#FFF'};">${dayNum}</div>
-                  ${isToday ? `<div style="font-size: 10px; background: #E50914; color: white; border-radius: 4px; padding: 2px 4px; font-weight: 700;">Today</div>` : ''}
+        ${allItems.length === 0 ? `
+          <div class="card"><div class="empty-state">
+            <div class="empty-state-icon">📅</div>
+            <div class="empty-state-title">Your schedule is clear</div>
+            <div class="empty-state-desc">Add events, set goal deadlines, or track placements to see them here.</div>
+            <button class="btn btn-primary" onclick="window.calendarView.addEvent()">Add Event</button>
+          </div></div>
+        ` : `
+          <div class="card" style="padding: var(--spacing-4);">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${allItems.map(item => `
+                <div style="display: flex; align-items: center; gap: 16px; padding: 12px 16px; background: var(--bg-input); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); border-left: 3px solid ${item.type === 'goal' ? 'var(--accent-primary)' : item.type === 'placement' ? 'var(--accent-secondary)' : 'var(--color-info)'};">
+                  <div style="width: 80px; font-size: 13px; font-weight: 700; color: var(--text-tertiary);">${new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+                  <div style="flex: 1; font-size: 15px; font-weight: 500; color: var(--text-primary);">${item.title}</div>
+                  <span class="badge badge-${item.type === 'goal' ? 'urgent' : item.type === 'placement' ? 'work' : 'personal'}" style="font-size: 10px;">${(item.type || 'event').toUpperCase()}</span>
+                  ${!item.type || item.type === 'event' ? `<button class="btn btn-icon" onclick="window.calendarView.deleteEvent('${item.id}')"><svg viewBox="0 0 24 24" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>` : ''}
                 </div>
-              `;
-            }).join('')}
+              `).join('')}
+            </div>
           </div>
-        </div>
-
+        `}
       </div>
     `;
+  }
+
+  addEvent() {
+    const title = prompt('Event name:');
+    if (!title) return;
+    const date = prompt('Date (YYYY-MM-DD):') || new Date().toISOString().slice(0, 10);
+    window.store.setState(prev => ({ calendarEvents: [...(prev.calendarEvents || []), { id: `evt_${Date.now()}`, title, date, type: 'event' }] }));
+  }
+
+  deleteEvent(id) {
+    if (!confirm('Remove this event?')) return;
+    window.store.setState({ calendarEvents: (window.store.state.calendarEvents || []).filter(e => e.id !== id) });
   }
 }
 

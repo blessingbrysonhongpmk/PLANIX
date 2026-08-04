@@ -149,23 +149,18 @@ window.showToast = function(message, type = 'info') {
   if (!container) return;
 
   const toast = document.createElement('div');
-  toast.style.cssText = `
-    background: #1C1C21;
-    color: white;
-    border: 1px solid ${type === 'success' ? '#10B981' : type === 'danger' ? '#E50914' : '#E50914'};
-    padding: 12px 18px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-    animation: fadeIn 0.2s ease-out;
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <span>${type === 'success' ? '✓' : type === 'danger' ? '⚠' : 'ℹ️'}</span>
+    <span>${message}</span>
   `;
-  toast.innerText = message;
+  
   container.appendChild(toast);
 
   setTimeout(() => {
-    toast.remove();
-  }, 3000);
+    toast.classList.add('toast-exit');
+    setTimeout(() => toast.remove(), 300); // Wait for exit animation
+  }, 3500);
 };
 
 document.addEventListener('DOMContentLoaded', () => {

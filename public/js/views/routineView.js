@@ -1,113 +1,61 @@
 /**
- * PLANIX ROUTINE VIEW
- * Time-block planner (Morning, Afternoon, Evening) with simple toggle
+ * PLANIX ROUTINE VIEW — Time blocking and daily schedule generator
  */
 
 class RoutineView {
   render(state) {
-    const morning = state.routine.filter(r => r.period === 'morning');
-    const afternoon = state.routine.filter(r => r.period === 'afternoon');
-    const evening = state.routine.filter(r => r.period === 'evening');
-
+    const blocks = state.routineBlocks || [];
+    
     return `
-      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1000px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-          <div>
-            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
-              <span>⏰</span> Daily Routine Planner
-            </h1>
-            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
-              Plan your morning, afternoon, and evening routine blocks for maximum daily focus.
-            </p>
+      <div class="view-container animate-fade-in">
+        <div class="page-header">
+          <div class="page-header-info">
+            <h1 class="page-title">Routine</h1>
+            <p class="page-description">Design your perfect day with time-blocking. Stay structured without being rigid.</p>
           </div>
-
-          <button class="btn" style="background: #E50914; color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 700; cursor: pointer;" onclick="window.routineView.addRoutineItem()">
-            + Add Routine Slot
-          </button>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="window.routineView.addBlock()">+ Add Time Block</button>
+          </div>
         </div>
 
-        <!-- Routine Time Blocks -->
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-          
-          <!-- Morning Block -->
-          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
-            <h3 style="font-size: 16px; font-weight: 700; color: #F5B700; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
-              <span>🌅</span> Morning Routine
-            </h3>
-            ${this.renderBlockList(morning)}
-          </div>
-
-          <!-- Afternoon Block -->
-          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
-            <h3 style="font-size: 16px; font-weight: 700; color: #3B82F6; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
-              <span>☀️</span> Afternoon Routine
-            </h3>
-            ${this.renderBlockList(afternoon)}
-          </div>
-
-          <!-- Evening Block -->
-          <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
-            <h3 style="font-size: 16px; font-weight: 700; color: #10B981; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
-              <span>🌙</span> Evening Routine
-            </h3>
-            ${this.renderBlockList(evening)}
-          </div>
-
-        </div>
-
-      </div>
-    `;
-  }
-
-  renderBlockList(items) {
-    if (items.length === 0) return `<div style="color: #71717A; font-size: 13px;">No items scheduled.</div>`;
-
-    return `
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        ${items.map(item => `
-          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #1C1C21; border-radius: 10px; border: 1px solid #27272A;">
-            <div style="display: flex; align-items: center; gap: 14px;">
-              <input type="checkbox" ${item.done ? 'checked' : ''} style="width: 18px; height: 18px; accent-color: #E50914; cursor: pointer;" onchange="window.routineView.toggleDone('${item.id}')">
-              <span style="font-size: 13px; font-weight: 700; color: #E50914; min-width: 75px;">${item.time}</span>
-              <span style="color: ${item.done ? '#71717A' : '#FFF'}; text-decoration: ${item.done ? 'line-through' : 'none'}; font-size: 14px;">
-                ${item.title}
-              </span>
+        ${blocks.length === 0 ? `
+          <div class="card"><div class="empty-state">
+            <div class="empty-state-icon">⏱️</div>
+            <div class="empty-state-title">No routine set</div>
+            <div class="empty-state-desc">Time blocking helps you focus by assigning a specific job to every hour of your day.</div>
+            <button class="btn btn-primary" onclick="window.routineView.addBlock()">Create First Time Block</button>
+          </div></div>
+        ` : `
+          <div class="card" style="padding: var(--spacing-4);">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${blocks.sort((a,b) => a.time.localeCompare(b.time)).map(b => `
+                <div style="display: flex; align-items: center; gap: 16px; padding: 14px 16px; background: var(--bg-input); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); border-left: 3px solid var(--accent-primary);">
+                  <div style="width: 70px; font-size: 15px; font-weight: 800; color: var(--text-primary);">${b.time}</div>
+                  <div style="flex: 1;">
+                    <div style="font-size: 15px; font-weight: 600; color: var(--text-primary);">${b.title}</div>
+                    <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 2px;">${b.duration || '60m'}</div>
+                  </div>
+                  <button class="btn btn-icon" onclick="window.routineView.deleteBlock('${b.id}')"><svg viewBox="0 0 24 24" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div>
+              `).join('')}
             </div>
-            <button class="btn" style="background: transparent; color: #71717A; border: none;" onclick="window.routineView.deleteItem('${item.id}')">🗑️</button>
           </div>
-        `).join('')}
+        `}
       </div>
     `;
   }
 
-  toggleDone(id) {
-    const routine = window.store.state.routine.map(r => {
-      if (r.id === id) return { ...r, done: !r.done };
-      return r;
-    });
-    window.store.setState({ routine });
-  }
-
-  addRoutineItem() {
-    const title = prompt("Enter Routine Title e.g. 05:00 PM - Evening Tea & Study:");
+  addBlock() {
+    const title = prompt('Block name (e.g. Deep Work, Workout):');
     if (!title) return;
-
-    const newItem = {
-      id: `r_${Date.now()}`,
-      time: '05:00 PM',
-      title,
-      period: 'evening',
-      done: false
-    };
-
-    window.store.setState(prev => ({ routine: [...prev.routine, newItem] }));
+    const time = prompt('Start time (e.g. 09:00):') || '09:00';
+    const duration = prompt('Duration (e.g. 90m):') || '60m';
+    window.store.setState(prev => ({ routineBlocks: [...(prev.routineBlocks || []), { id: `rb_${Date.now()}`, title, time, duration }] }));
   }
 
-  deleteItem(id) {
-    const routine = window.store.state.routine.filter(r => r.id !== id);
-    window.store.setState({ routine });
+  deleteBlock(id) {
+    if (!confirm('Delete this time block?')) return;
+    window.store.setState({ routineBlocks: (window.store.state.routineBlocks || []).filter(b => b.id !== id) });
   }
 }
 

@@ -1,129 +1,117 @@
 /**
- * PLANIX TASKS VIEW
- * Clean Task List with Priority Flags, Simple English, and Backend REST API CRUD
+ * PLANIX TASKS VIEW — Product-quality task manager
+ * Page header, search, filter pills, add task, empty state, delete confirmation, success animation
  */
 
 class TasksView {
   constructor() {
-    this.filter = 'all'; // 'all' | 'pending' | 'completed'
+    this.filter = 'all';
+    this.searchQuery = '';
   }
 
   render(state) {
-    let filteredTasks = state.tasks;
-    if (this.filter === 'pending') filteredTasks = state.tasks.filter(t => !t.completed);
-    if (this.filter === 'completed') filteredTasks = state.tasks.filter(t => t.completed);
+    let tasks = state.tasks;
+    if (this.filter === 'pending') tasks = tasks.filter(t => !t.completed);
+    if (this.filter === 'completed') tasks = tasks.filter(t => t.completed);
+    if (this.searchQuery) tasks = tasks.filter(t => t.text.toLowerCase().includes(this.searchQuery.toLowerCase()));
+
+    const counts = { all: state.tasks.length, pending: state.tasks.filter(t => !t.completed).length, done: state.tasks.filter(t => t.completed).length };
 
     return `
-      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1000px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-          <div>
-            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
-              <span>✅</span> My Tasks
-            </h1>
-            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
-              Organize your daily tasks, set priority levels, and complete your work easily.
-            </p>
-          </div>
+      <div class="view-container animate-fade-in">
 
-          <!-- Filter Pills -->
-          <div style="display: flex; gap: 8px; background: #141417; padding: 4px; border-radius: 10px; border: 1px solid #27272A;">
-            <button class="btn" style="padding: 6px 14px; border-radius: 8px; border: none; font-size: 13px; cursor: pointer; ${this.filter === 'all' ? 'background: #E50914; color: white;' : 'background: transparent; color: #A1A1AA;'}" onclick="window.tasksView.setFilter('all')">All (${state.tasks.length})</button>
-            <button class="btn" style="padding: 6px 14px; border-radius: 8px; border: none; font-size: 13px; cursor: pointer; ${this.filter === 'pending' ? 'background: #E50914; color: white;' : 'background: transparent; color: #A1A1AA;'}" onclick="window.tasksView.setFilter('pending')">Pending (${state.tasks.filter(t=>!t.completed).length})</button>
-            <button class="btn" style="padding: 6px 14px; border-radius: 8px; border: none; font-size: 13px; cursor: pointer; ${this.filter === 'completed' ? 'background: #E50914; color: white;' : 'background: transparent; color: #A1A1AA;'}" onclick="window.tasksView.setFilter('completed')">Done (${state.tasks.filter(t=>t.completed).length})</button>
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-header-info">
+            <h1 class="page-title">Tasks</h1>
+            <p class="page-description">Organize your daily work. Add tasks, set priorities, and check them off.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="window.tasksView.openAddTask()">+ Add Task</button>
           </div>
         </div>
 
-        <!-- Add Task Input Box -->
-        <div style="background: #141417; border: 1px solid #27272A; border-radius: 14px; padding: 16px; margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
-          <input type="text" id="new-task-input" class="form-input" placeholder="Type new task e.g. Read English chapter..." style="flex: 1; min-width: 260px; background: #1C1C21; border-color: #3F3F46; color: white; padding: 12px; border-radius: 8px;" onkeydown="if(event.key==='Enter') window.tasksView.addTask()">
-          <select id="new-task-priority" class="form-input" style="background: #1C1C21; border-color: #3F3F46; color: white; padding: 12px; border-radius: 8px;">
-            <option value="high">🔴 High Priority</option>
-            <option value="medium" selected>🟡 Normal Priority</option>
-            <option value="low">🟢 Low Priority</option>
+        <!-- Search + Filters -->
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center;">
+          <input type="text" class="form-input" placeholder="Search tasks..." style="max-width: 280px; flex: 1;" value="${this.searchQuery}" oninput="window.tasksView.searchQuery = this.value; window.store.notify()">
+          <div style="display: flex; gap: 4px; background: var(--bg-input); padding: 3px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            ${['all', 'pending', 'completed'].map(f => `
+              <button class="btn ${this.filter === f ? 'btn-primary' : 'btn-ghost'}" style="padding: 5px 12px; font-size: 12px; min-height: auto;" onclick="window.tasksView.filter = '${f}'; window.store.notify()">
+                ${f === 'all' ? `All (${counts.all})` : f === 'pending' ? `Pending (${counts.pending})` : `Done (${counts.done})`}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Add Task Inline -->
+        <div id="task-add-area" class="card" style="margin-bottom: 20px; padding: var(--spacing-4); display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+          <input type="text" id="new-task-input" class="form-input" placeholder="What do you need to do?" style="flex: 1; min-width: 220px;" onkeydown="if(event.key==='Enter') window.tasksView.addTask()">
+          <select id="new-task-priority" class="form-input" style="width: auto; min-width: 140px;">
+            <option value="high">🔴 High</option>
+            <option value="medium" selected>🟡 Normal</option>
+            <option value="low">🟢 Low</option>
           </select>
-          <button class="btn" style="background: #E50914; color: white; border: none; border-radius: 8px; padding: 12px 20px; font-weight: 700; cursor: pointer;" onclick="window.tasksView.addTask()">
-            Add Task
-          </button>
+          <button class="btn btn-primary" onclick="window.tasksView.addTask()">Add</button>
         </div>
 
-        <!-- Task List Container -->
-        <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
-          ${filteredTasks.length === 0 ? `
-            <div style="text-align: center; padding: 40px; color: #71717A;">
-              <div style="font-size: 32px; margin-bottom: 8px;">📝</div>
-              <div>No tasks found in this list.</div>
+        <!-- Task List -->
+        <div class="card" style="padding: var(--spacing-4);">
+          ${tasks.length === 0 ? `
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <div class="empty-state-title">${this.searchQuery ? 'No matching tasks' : this.filter === 'completed' ? 'No completed tasks yet' : 'No tasks yet'}</div>
+              <div class="empty-state-desc">${this.searchQuery ? 'Try a different search term.' : 'Add your first task above. It takes less than 10 seconds.'}</div>
             </div>
           ` : `
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-              ${filteredTasks.map(task => `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #1C1C21; border-radius: 12px; border: 1px solid #27272A; transition: transform 0.15s ease;">
-                  <div style="display: flex; align-items: center; gap: 14px; flex: 1;">
-                    <input type="checkbox" ${task.completed ? 'checked' : ''} style="width: 20px; height: 20px; accent-color: #E50914; cursor: pointer;" onchange="window.tasksView.toggleTask('${task.id}')">
-                    <span style="color: ${task.completed ? '#71717A' : '#FFF'}; text-decoration: ${task.completed ? 'line-through' : 'none'}; font-size: 15px;">
-                      ${task.text}
-                    </span>
-                  </div>
-
-                  <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; ${task.priority === 'high' ? 'background: rgba(229,9,20,0.2); color: #FF4D4D;' : task.priority === 'medium' ? 'background: rgba(245,183,0,0.2); color: #F5B700;' : 'background: rgba(16,185,129,0.2); color: #10B981;'}">
-                      ${task.priority ? task.priority.toUpperCase() : 'NORMAL'}
-                    </span>
-                    <button class="btn" style="background: transparent; color: #71717A; border: none; font-size: 16px; cursor: pointer;" title="Delete task" onclick="window.tasksView.deleteTask('${task.id}')">
-                      🗑️
-                    </button>
-                  </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              ${tasks.map(task => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--bg-input); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); transition: background var(--transition-fast);"
+                     onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='var(--bg-input)'">
+                  <input type="checkbox" ${task.completed ? 'checked' : ''} style="width: 18px; height: 18px; accent-color: var(--accent-primary); cursor: pointer; flex-shrink: 0;" onchange="window.tasksView.toggleTask('${task.id}')">
+                  <span style="flex: 1; font-size: 14px; color: ${task.completed ? 'var(--text-tertiary)' : 'var(--text-primary)'}; text-decoration: ${task.completed ? 'line-through' : 'none'};">${task.text}</span>
+                  <span class="badge badge-${task.priority === 'high' ? 'urgent' : task.priority === 'low' ? 'health' : 'work'}" style="font-size: 10px;">${(task.priority || 'normal').toUpperCase()}</span>
+                  <button class="btn btn-icon" onclick="window.tasksView.deleteTask('${task.id}')" title="Delete task" aria-label="Delete task">
+                    <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
                 </div>
               `).join('')}
             </div>
           `}
         </div>
-
       </div>
     `;
   }
 
-  setFilter(f) {
-    this.filter = f;
-    window.store.notify();
+  openAddTask() {
+    const input = document.getElementById('new-task-input');
+    if (input) input.focus();
   }
 
   async addTask() {
     const input = document.getElementById('new-task-input');
-    const prioritySelect = document.getElementById('new-task-priority');
+    const priority = document.getElementById('new-task-priority');
     if (!input || !input.value.trim()) return;
 
-    const text = input.value.trim();
-    const priority = prioritySelect ? prioritySelect.value : 'medium';
+    const newTask = { id: `task_${Date.now()}`, text: input.value.trim(), priority: priority?.value || 'medium', completed: false, createdAt: new Date().toISOString() };
     input.value = '';
-
-    const newTask = {
-      id: `task_${Date.now()}`,
-      text,
-      priority,
-      completed: false,
-      category: 'general',
-      createdAt: new Date().toISOString()
-    };
-
     window.store.setState(prev => ({ tasks: [newTask, ...prev.tasks] }));
-    await window.apiClient.post('/tasks', newTask);
+    if (window.showToast) window.showToast('Task added', 'success');
+    try { await window.apiClient.post('/tasks', newTask); } catch(e) {}
   }
 
-  async toggleTask(taskId) {
-    const tasks = window.store.state.tasks.map(t => {
-      if (t.id === taskId) return { ...t, completed: !t.completed };
-      return t;
-    });
+  async toggleTask(id) {
+    const tasks = window.store.state.tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
     window.store.setState({ tasks });
-    await window.apiClient.put(`/tasks/${taskId}`, { completed: true });
+    const task = tasks.find(t => t.id === id);
+    if (task?.completed && window.showToast) window.showToast('Task completed! ✓', 'success');
+    try { await window.apiClient.put(`/tasks/${id}`, { completed: task?.completed }); } catch(e) {}
   }
 
-  async deleteTask(taskId) {
-    const tasks = window.store.state.tasks.filter(t => t.id !== taskId);
+  async deleteTask(id) {
+    if (!confirm('Delete this task? This cannot be undone.')) return;
+    const tasks = window.store.state.tasks.filter(t => t.id !== id);
     window.store.setState({ tasks });
-    await window.apiClient.delete(`/tasks/${taskId}`);
+    try { await window.apiClient.delete(`/tasks/${id}`); } catch(e) {}
   }
 }
 

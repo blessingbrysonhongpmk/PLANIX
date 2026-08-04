@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "id": "note_1785803264185_ikhp",
+    "title": "XCGSG",
+    "content": "Write your notes here...",
+    "folder": "General",
+    "tags": [
+      "general"
+    ],
+    "isPinned": false,
+    "isArchived": false,
+    "audioUrl": null,
+    "versions": [
+      {
+        "timestamp": "2026-08-04T00:27:44.185Z",
+        "title": "XCGSG",
+        "content": "Write your notes here..."
+      }
+    ],
+    "createdAt": "2026-08-04T00:27:44.185Z",
+    "updatedAt": "2026-08-04T00:27:44.185Z"
+  }
+]

@@ -18,6 +18,7 @@ const ASSETS_TO_CACHE = [
   '/js/components/sidebar.js',
   '/js/components/commandPalette.js',
   '/js/components/aiDrawer.js',
+  '/js/components/settingsModal.js',
   '/js/views/dashboardView.js',
   '/js/views/tasksView.js',
   '/js/views/habitsView.js',
@@ -26,7 +27,15 @@ const ASSETS_TO_CACHE = [
   '/js/views/notesView.js',
   '/js/views/calendarView.js',
   '/js/views/journalView.js',
-  '/js/views/analyticsView.js'
+  '/js/views/analyticsView.js',
+  '/js/views/goalsView.js',
+  '/js/views/projectsView.js',
+  '/js/views/engineeringHubView.js',
+  '/js/views/placementHubView.js',
+  '/js/views/codingHubView.js',
+  '/js/views/learningHubView.js',
+  '/js/views/resourceLibraryView.js',
+  '/js/views/devWorkspaceView.js'
 ];
 
 self.addEventListener('install', (event) => {

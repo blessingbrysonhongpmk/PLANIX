@@ -1,84 +1,100 @@
 /**
- * PLANIX JOURNAL VIEW
- * Daily mood reflection & quick entry logger with REST API integration
+ * PLANIX JOURNAL VIEW — Daily reflection and mood tracking
  */
 
 class JournalView {
+  constructor() { this.activeEntryId = null; }
+
   render(state) {
+    const entries = state.journalEntries || [];
+    const active = this.activeEntryId ? entries.find(e => e.id === this.activeEntryId) : null;
+
     return `
-      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1000px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-          <div>
-            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
-              <span>📓</span> Daily Journal
-            </h1>
-            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
-              Record your daily thoughts, mood reflections, and key highlights.
-            </p>
+      <div class="view-container animate-fade-in">
+        <div class="page-header">
+          <div class="page-header-info">
+            <h1 class="page-title">Journal</h1>
+            <p class="page-description">Reflect on your day, track your mood, and clear your mind.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="window.journalView.addEntry()">+ New Entry</button>
           </div>
         </div>
 
-        <!-- Today Reflection Input -->
-        <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
-          <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0 0 12px 0;">How was your day today?</h3>
-          
-          <!-- Mood Selection -->
-          <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-            <button class="btn" style="background: #1C1C21; border: 1px solid #27272A; font-size: 24px; padding: 8px 16px; border-radius: 10px;" onclick="window.journalView.setMood('😀')">😀</button>
-            <button class="btn" style="background: #1C1C21; border: 1px solid #27272A; font-size: 24px; padding: 8px 16px; border-radius: 10px;" onclick="window.journalView.setMood('😐')">😐</button>
-            <button class="btn" style="background: #1C1C21; border: 1px solid #27272A; font-size: 24px; padding: 8px 16px; border-radius: 10px;" onclick="window.journalView.setMood('😔')">😔</button>
-            <button class="btn" style="background: #1C1C21; border: 1px solid #27272A; font-size: 24px; padding: 8px 16px; border-radius: 10px;" onclick="window.journalView.setMood('🔥')">🔥</button>
-          </div>
-
-          <textarea id="journal-input" class="form-input" style="width: 100%; min-height: 120px; background: #1C1C21; border: 1px solid #27272A; color: white; border-radius: 12px; padding: 14px; font-size: 14px; resize: vertical;" placeholder="Write a short reflection about today..."></textarea>
-          
-          <button class="btn" style="margin-top: 14px; background: #E50914; color: white; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; cursor: pointer;" onclick="window.journalView.addEntry()">
-            Save Entry 💾
-          </button>
-        </div>
-
-        <!-- History Entries -->
-        <div style="background: #141417; border: 1px solid #27272A; border-radius: 16px; padding: 20px;">
-          <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0 0 16px 0;">Past Entries</h3>
-          <div style="display: flex; flex-direction: column; gap: 12px;">
-            ${state.journal.map(j => `
-              <div style="padding: 14px; background: #1C1C21; border-radius: 12px; border: 1px solid #27272A;">
-                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #A1A1AA; margin-bottom: 6px;">
-                  <span>📅 ${j.date}</span>
-                  <span style="font-size: 16px;">${j.mood || '😀'}</span>
-                </div>
-                <div style="color: #FFF; font-size: 14px; line-height: 1.5;">${j.text}</div>
+        ${entries.length === 0 ? `
+          <div class="card"><div class="empty-state">
+            <div class="empty-state-icon">📖</div>
+            <div class="empty-state-title">No journal entries</div>
+            <div class="empty-state-desc">Writing down your thoughts helps clear your mind and improve focus. Start your first entry today.</div>
+            <button class="btn btn-primary" onclick="window.journalView.addEntry()">Start Journaling</button>
+          </div></div>
+        ` : `
+          <div class="notes-layout">
+            <!-- Sidebar -->
+            <div class="notes-sidebar">
+              <div class="notes-list">
+                ${entries.map(e => `
+                  <div class="note-item ${this.activeEntryId === e.id ? 'active' : ''}" onclick="window.journalView.selectEntry('${e.id}')">
+                    <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${new Date(e.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+                    <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+                      <span>${e.mood === 'great' ? '🤩' : e.mood === 'good' ? '🙂' : e.mood === 'meh' ? '😐' : '😫'}</span>
+                      <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${(e.content || 'Empty entry').substring(0, 30)}</span>
+                    </div>
+                  </div>
+                `).join('')}
               </div>
-            `).join('')}
-          </div>
-        </div>
+            </div>
 
+            <!-- Editor -->
+            <div class="note-editor-card">
+              ${active ? `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="font-size: 18px; font-weight: 700;">${new Date(active.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
+                  <select class="form-input" style="width: auto; padding: 6px 12px; min-height: auto; border-radius: var(--radius-full);" onchange="window.journalView.updateEntry('${active.id}', 'mood', this.value)">
+                    <option value="great" ${active.mood === 'great' ? 'selected' : ''}>🤩 Great</option>
+                    <option value="good" ${active.mood === 'good' ? 'selected' : ''}>🙂 Good</option>
+                    <option value="meh" ${active.mood === 'meh' ? 'selected' : ''}>😐 Meh</option>
+                    <option value="bad" ${active.mood === 'bad' ? 'selected' : ''}>😫 Bad</option>
+                  </select>
+                </div>
+                
+                <textarea class="editor-textarea" placeholder="How was your day? What went well? What could be better?" oninput="window.journalView.updateEntry('${active.id}', 'content', this.value)">${active.content || ''}</textarea>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border-subtle);">
+                  <span style="font-size: 11px; color: var(--text-tertiary);">Auto-saved</span>
+                  <button class="btn btn-ghost" style="color: var(--color-danger); font-size: 12px;" onclick="window.journalView.deleteEntry('${active.id}')">Delete Entry</button>
+                </div>
+              ` : `
+                <div class="empty-state" style="padding: 40px;">
+                  <div class="empty-state-icon">✍️</div>
+                  <div class="empty-state-title">Select an entry</div>
+                  <div class="empty-state-desc">Select an entry from the sidebar to reflect on your day.</div>
+                </div>
+              `}
+            </div>
+          </div>
+        `}
       </div>
     `;
   }
 
-  setMood(m) {
-    this.selectedMood = m;
+  addEntry() {
+    const id = `jrn_${Date.now()}`;
+    const date = new Date().toISOString();
+    window.store.setState(prev => ({ journalEntries: [{ id, date, mood: 'good', content: '' }, ...(prev.journalEntries || [])] }));
+    this.activeEntryId = id;
   }
 
-  async addEntry() {
-    const input = document.getElementById('journal-input');
-    if (!input || !input.value.trim()) return;
+  selectEntry(id) { this.activeEntryId = id; window.store.notify(); }
 
-    const text = input.value.trim();
-    input.value = '';
+  updateEntry(id, field, value) {
+    window.store.setState({ journalEntries: window.store.state.journalEntries.map(e => e.id === id ? { ...e, [field]: value } : e) });
+  }
 
-    const newEntry = {
-      id: `j_${Date.now()}`,
-      date: new Date().toISOString().slice(0, 10),
-      mood: this.selectedMood || '😀',
-      text
-    };
-
-    window.store.setState(prev => ({ journal: [newEntry, ...prev.journal] }));
-    await window.apiClient.post('/journal', newEntry);
+  deleteEntry(id) {
+    if (!confirm('Delete this journal entry?')) return;
+    this.activeEntryId = null;
+    window.store.setState({ journalEntries: window.store.state.journalEntries.filter(e => e.id !== id) });
   }
 }
 

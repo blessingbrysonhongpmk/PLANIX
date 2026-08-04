@@ -1,9 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    PLANIX MICRO-INTERACTIONS & ANIMATIONS
-   Smooth Keyframes, Skeletons, Page Transitions & Floating Accents
+   Smooth Keyframes, Skeletons, Page Transitions, Success Celebrations
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Fade-In & Slide Animations */
+/* --- Page & Element Entry Animations --- */
 .animate-fade-in {
   animation: fadeIn 0.35s var(--ease-out) forwards;
 }
@@ -18,6 +18,10 @@
 
 .animate-scale-up {
   animation: scaleUp 0.3s var(--ease-spring) forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.35s var(--ease-out) forwards;
 }
 
 @keyframes fadeIn {
@@ -40,12 +44,17 @@
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Skeleton Loader Animation */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* --- Skeleton Loader Animation --- */
 .skeleton {
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.1) 37%,
+    rgba(255, 255, 255, 0.08) 37%,
     rgba(255, 255, 255, 0.04) 63%
   );
   background-size: 400% 100%;
@@ -58,14 +67,37 @@
   100% { background-position: 0 50%; }
 }
 
-/* Floating Glow Particles */
+/* --- Success Celebration (Premium, not childish) --- */
+.success-burst {
+  animation: successBurst 0.5s var(--ease-spring) forwards;
+}
+
+@keyframes successBurst {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.15); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* Confetti pop for milestone completions */
+.confetti-pop {
+  animation: confettiPop 0.6s var(--ease-spring) forwards;
+}
+
+@keyframes confettiPop {
+  0% { transform: scale(0.8); opacity: 0; }
+  40% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- Floating Glow Pulses --- */
 .glow-pulse {
   animation: glowPulse 3s ease-in-out infinite alternate;
 }
 
 @keyframes glowPulse {
-  0% { box-shadow: 0 0 15px rgba(255, 214, 0, 0.15); }
-  100% { box-shadow: 0 0 35px rgba(255, 214, 0, 0.35); }
+  0% { box-shadow: 0 0 15px rgba(229, 9, 20, 0.15); }
+  100% { box-shadow: 0 0 35px rgba(229, 9, 20, 0.35); }
 }
 
 .glow-indigo-pulse {
@@ -77,7 +109,7 @@
   100% { box-shadow: 0 0 35px rgba(99, 102, 241, 0.45); }
 }
 
-/* Interactive Checkbox Pulse */
+/* --- Interactive Checkbox Pop --- */
 .checkbox-custom {
   width: 20px;
   height: 20px;
@@ -103,7 +135,7 @@
   100% { transform: scale(1); }
 }
 
-/* Spinner */
+/* --- Spinner --- */
 .spinner {
   width: 20px;
   height: 20px;
@@ -115,4 +147,34 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* --- Toast Slide-In --- */
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toastSlideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(40px); }
+}
+
+/* --- Subtle Breathing for Focus Elements --- */
+.breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* --- Reduced Motion Respect --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

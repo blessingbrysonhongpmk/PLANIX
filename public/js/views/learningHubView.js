@@ -1,77 +1,67 @@
 /**
- * PLANIX LEARNING HUB VIEW
- * Skill progression roadmap & course tracker (Python, PyTorch, React, System Design)
+ * PLANIX LEARNING HUB — Topic roadmaps and learning progress
  */
 
 class LearningHubView {
   render(state) {
-    const learning = state.learning || [];
-
+    const topics = state.learningTopics || [];
     return `
-      <div class="view-container animate-fade-in" style="padding: 24px; max-width: 1100px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-          <div>
-            <h1 style="font-size: 26px; font-weight: 800; color: #FFF; margin: 0; display: flex; align-items: center; gap: 10px;">
-              <span>📚</span> Learning Hub & Skill Roadmap
-            </h1>
-            <p style="color: #A1A1AA; font-size: 14px; margin-top: 4px;">
-              Track your skill progression across AI, Full-Stack Web, Systems Programming, and DSA.
-            </p>
+      <div class="view-container animate-fade-in">
+        <div class="page-header">
+          <div class="page-header-info">
+            <h1 class="page-title">Learning Hub</h1>
+            <p class="page-description">Add topics, track your learning path, and build real skills step by step.</p>
           </div>
-
-          <button class="btn" style="background: linear-gradient(135deg, #3B82F6, #8B5CF6); color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 700; cursor: pointer;" onclick="window.learningHubView.addSkill()">
-            + Add Skill Track
-          </button>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="window.learningHubView.addTopic()">+ Add Topic</button>
+          </div>
         </div>
 
-        <!-- Skills Progress Grid -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
-          ${learning.map(item => `
-            <div style="background: #18181B; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 700; background: rgba(59,130,246,0.15); color: #3B82F6;">
-                  ${item.category || 'SKILL'}
-                </span>
-                <span style="font-size: 12px; color: #8B5CF6; font-weight: 600;">${item.level}</span>
+        ${topics.length === 0 ? `
+          <div class="card"><div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <div class="empty-state-title">No learning topics yet</div>
+            <div class="empty-state-desc">Add topics you want to learn — like React, Machine Learning, or System Design.</div>
+            <button class="btn btn-primary" onclick="window.learningHubView.addTopic()">Add First Topic</button>
+          </div></div>
+        ` : `
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+            ${topics.map(t => `
+              <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <h3 style="font-size: 17px; font-weight: 700; color: var(--text-primary); margin: 0;">${t.name}</h3>
+                  <button class="btn btn-icon" onclick="window.learningHubView.deleteTopic('${t.id}')"><svg viewBox="0 0 24 24" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div>
+                <div style="font-size: 12px; color: var(--text-tertiary); margin: 8px 0 14px;">${t.description || 'No description'}</div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">
+                  <span>Progress</span><span style="font-weight: 700; color: var(--accent-primary);">${t.progress || 0}%</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width: ${t.progress || 0}%;"></div></div>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 14px; font-size: 13px;" onclick="window.learningHubView.updateProgress('${t.id}')">+ Update Progress</button>
               </div>
-
-              <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 6px 0 12px 0;">${item.skill}</h3>
-
-              <div style="display: flex; justify-content: space-between; font-size: 12px; color: #A1A1AA; margin-bottom: 6px;">
-                <span>Mastery Progress</span>
-                <span style="color: #3B82F6; font-weight: 700;">${item.progress}%</span>
-              </div>
-
-              <div style="width: 100%; height: 6px; background: #121215; border-radius: 4px; overflow: hidden; margin-bottom: 14px;">
-                <div style="width: ${item.progress}%; height: 100%; background: linear-gradient(90deg, #3B82F6, #8B5CF6); border-radius: 4px;"></div>
-              </div>
-
-              <button class="btn" style="width: 100%; background: #121215; border: 1px solid #27272A; color: white; border-radius: 8px; padding: 8px; font-size: 12px; cursor: pointer;" onclick="window.learningHubView.incrementProgress('${item.id}')">
-                + Increment Practice Progress
-              </button>
-            </div>
-          `).join('')}
-        </div>
-
+            `).join('')}
+          </div>
+        `}
       </div>
     `;
   }
 
-  addSkill() {
-    const skill = prompt("Enter Skill Name (e.g. Docker & Kubernetes):");
-    if (!skill) return;
-    const newSkill = { id: `sk_${Date.now()}`, skill, level: 'Beginner', progress: 20, category: 'DevOps' };
-    window.store.setState(prev => ({ learning: [...prev.learning, newSkill] }));
+  addTopic() {
+    const name = prompt('Topic name (e.g. React, Machine Learning, System Design):');
+    if (!name) return;
+    window.store.setState(prev => ({ learningTopics: [...(prev.learningTopics || []), { id: `lt_${Date.now()}`, name, progress: 0 }] }));
   }
 
-  incrementProgress(id) {
-    const learning = window.store.state.learning.map(s => {
-      if (s.id === id) return { ...s, progress: Math.min(100, s.progress + 10) };
-      return s;
-    });
-    window.store.setState({ learning });
+  updateProgress(id) {
+    const val = parseInt(prompt('Enter new progress (0-100):') || '0');
+    const n = Math.min(100, Math.max(0, val));
+    window.store.setState({ learningTopics: (window.store.state.learningTopics || []).map(t => t.id === id ? { ...t, progress: n } : t) });
+    if (n >= 100 && window.showToast) window.showToast('Topic mastered! 🎉', 'success');
+  }
+
+  deleteTopic(id) {
+    if (!confirm('Remove this topic?')) return;
+    window.store.setState({ learningTopics: (window.store.state.learningTopics || []).filter(t => t.id !== id) });
   }
 }
 
