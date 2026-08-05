@@ -30,8 +30,118 @@ class DashboardView {
     const totalHabits = habits.length || 6;
 
     return `
-      <div class="view-container animate-fade-in" style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="view-container animate-fade-in" style="display: flex; flex-direction: column; gap: 20px; padding-bottom: 80px;">
+        
+        <!-- ==========================================
+             NATIVE MOBILE DASHBOARD
+             ========================================== -->
+        <div class="mobile-only" style="display: flex; flex-direction: column; gap: 24px;">
+          
+          <!-- 1. HEADER & GREETING -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <p style="font-size: 13px; color: var(--text-tertiary); margin: 0 0 2px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Home</p>
+              <h1 style="font-size: 24px; font-weight: 800; color: #FFF; margin: 0; letter-spacing: -0.02em;">Good evening, <span style="color: #E50914;">${user.name || 'Blessing'}</span></h1>
+            </div>
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #E50914, #B91C2D); color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;">
+              ${(user.name || 'B')[0]}
+            </div>
+          </div>
 
+          <!-- 2. HORIZONTAL QUICK STATS -->
+          <div style="display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; margin: 0 -16px; padding: 0 16px;">
+            
+            <div style="min-width: 130px; background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(229, 9, 20, 0.12); color: #E50914; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                <span style="font-size: 11px; font-weight: 600; color: #8E8E9E;">Tasks</span>
+              </div>
+              <div style="font-size: 20px; font-weight: 800; color: #FFF;">${completedTasks.length}<span style="color: #4A4A5A; font-size: 14px;">/${tasks.length}</span></div>
+            </div>
+
+            <div style="min-width: 130px; background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(139, 92, 246, 0.12); color: #8B5CF6; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+                <span style="font-size: 11px; font-weight: 600; color: #8E8E9E;">Focus</span>
+              </div>
+              <div style="font-size: 20px; font-weight: 800; color: #FFF;">4.2<span style="color: #4A4A5A; font-size: 14px;"> hrs</span></div>
+            </div>
+
+            <div style="min-width: 130px; background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(16, 185, 129, 0.12); color: #10B981; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
+                <span style="font-size: 11px; font-weight: 600; color: #8E8E9E;">Habits</span>
+              </div>
+              <div style="font-size: 20px; font-weight: 800; color: #FFF;">${habitsDone}<span style="color: #4A4A5A; font-size: 14px;">/${totalHabits}</span></div>
+            </div>
+
+          </div>
+
+          <!-- 3. FOCUS SESSION CTA -->
+          <div style="background: linear-gradient(135deg, rgba(229, 9, 20, 0.1), rgba(185, 28, 45, 0.05)); border: 1px solid rgba(229, 9, 20, 0.2); border-radius: 20px; padding: 20px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; right: -20px; top: -20px; font-size: 120px; opacity: 0.03;">⏱️</div>
+            <div>
+              <div style="font-size: 12px; font-weight: 700; color: #E50914; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Deep Work</div>
+              <div style="font-size: 18px; font-weight: 800; color: #FFF; margin-bottom: 12px;">Ready to focus?</div>
+              <button class="btn" style="background: #E50914; color: #FFF; border: none; padding: 10px 20px; border-radius: 24px; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px;" onclick="window.store.setState({ currentView: 'study' })">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Start Session
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. TODAY'S TASKS (MOBILE NATIVE LIST) -->
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h2 style="font-size: 16px; font-weight: 800; color: #FFF; margin: 0;">Today's Tasks</h2>
+              <span style="font-size: 12px; color: #E50914; font-weight: 600;" onclick="window.store.setState({ currentView: 'plannerHub' })">View All</span>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              ${filteredTasks.slice(0, 3).map(task => `
+                <div style="background: #121217; border: 1px solid #22222A; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 12px;">
+                  <div style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid ${task.completed ? '#10B981' : '#4A4A5A'}; background: ${task.completed ? '#10B981' : 'transparent'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                    ${task.completed ? '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: 14px; font-weight: 600; color: ${task.completed ? '#8E8E9E' : '#FFF'}; text-decoration: ${task.completed ? 'line-through' : 'none'};">${task.title}</div>
+                    <div style="font-size: 12px; color: #8E8E9E; margin-top: 4px; display: flex; align-items: center; gap: 8px;">
+                      ${task.time ? `<span>🕒 ${task.time}</span>` : ''}
+                      ${task.priority === 'high' || task.priority === 'urgent' ? `<span style="color: #E50914;">🔥 High Priority</span>` : ''}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+              ${filteredTasks.length === 0 ? '<div style="text-align:center; color:#8E8E9E; font-size: 13px; padding: 20px;">No tasks for today. Relax!</div>' : ''}
+            </div>
+          </div>
+
+          <!-- 5. UPCOMING EVENTS (AGENDA STYLE) -->
+          <div>
+            <h2 style="font-size: 16px; font-weight: 800; color: #FFF; margin: 0 0 12px 0;">Upcoming Events</h2>
+            <div style="background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 16px;">
+              ${events.slice(0, 2).map((event, i) => `
+                <div style="display: flex; gap: 16px; align-items: flex-start; ${i > 0 ? 'border-top: 1px solid #22222A; padding-top: 16px;' : ''}">
+                  <div style="text-align: center; width: 40px; flex-shrink: 0;">
+                    <div style="font-size: 11px; font-weight: 700; color: #E50914; text-transform: uppercase;">${new Date(event.start).toLocaleString('en-US', { weekday: 'short' })}</div>
+                    <div style="font-size: 18px; font-weight: 800; color: #FFF;">${new Date(event.start).getDate()}</div>
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: 14px; font-weight: 700; color: #FFF;">${event.title}</div>
+                    <div style="font-size: 12px; color: #8E8E9E; margin-top: 4px;">${new Date(event.start).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} • ${event.extendedProps?.location || 'Online'}</div>
+                  </div>
+                </div>
+              `).join('')}
+              ${events.length === 0 ? '<div style="text-align:center; color:#8E8E9E; font-size: 13px;">No upcoming events.</div>' : ''}
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==========================================
+             DESKTOP DASHBOARD (Hidden on Mobile)
+             ========================================== -->
+        <div class="desktop-only" style="display: flex; flex-direction: column; gap: 20px;">
         <!-- 1. GREETING HEADER -->
         <div style="margin-bottom: 4px;">
           <h1 style="font-size: 28px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em; margin: 0; display: flex; align-items: center; gap: 8px;">
@@ -478,8 +588,7 @@ class DashboardView {
 
           </div>
 
-        </div>
-
+        </div> <!-- End Desktop Only -->
       </div>
     `;
   }

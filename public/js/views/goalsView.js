@@ -23,9 +23,52 @@ class GoalsView {
     };
 
     return `
-      <div class="view-container animate-fade-in" style="display: flex; flex-direction: column; gap: 24px; padding-right: 10px;">
+      <div class="view-container animate-fade-in" style="padding-right: 10px;">
+        
+        <!-- ==========================================
+             NATIVE MOBILE GOALS
+             ========================================== -->
+        <div class="mobile-only" style="padding-bottom: 80px;">
+          
+          <div style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none;">
+            <button class="mobile-chip ${this.filterTab === 'All Goals' ? 'active' : ''}" onclick="window.goalsView.filterTab = 'All Goals'; window.store.notify()">All</button>
+            <button class="mobile-chip ${this.filterTab === 'Active' ? 'active' : ''}" onclick="window.goalsView.filterTab = 'Active'; window.store.notify()">Active</button>
+            <button class="mobile-chip ${this.filterTab === 'Completed' ? 'active' : ''}" onclick="window.goalsView.filterTab = 'Completed'; window.store.notify()">Done</button>
+          </div>
 
-        <!-- 1. GREETING HEADER & TABS -->
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            ${goals.map(goal => `
+              <div style="background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div>
+                    <h3 style="font-size: 15px; font-weight: 700; color: #FFF; margin: 0 0 4px 0;">${goal.title}</h3>
+                    <div style="font-size: 11px; color: #8E8E9E;">${goal.category} • Target: ${goal.deadline}</div>
+                  </div>
+                  <div style="width: 40px; height: 40px; border-radius: 50%; background: #1A1A22; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                    ${goal.icon || '🎯'}
+                  </div>
+                </div>
+                
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-bottom: 6px;">
+                    <span style="color: #8E8E9E;">Progress</span>
+                    <span style="color: #FFF;">${goal.progress}%</span>
+                  </div>
+                  <div style="width: 100%; height: 6px; background: #1A1A22; border-radius: 4px; overflow: hidden;">
+                    <div style="width: ${goal.progress}%; height: 100%; background: ${goal.progress === 100 ? '#10B981' : 'linear-gradient(90deg, #E50914, #B91C2D)'}; border-radius: 4px;"></div>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+            ${goals.length === 0 ? '<div style="text-align: center; color: #8E8E9E; padding: 40px; font-size: 14px;">No goals found.</div>' : ''}
+          </div>
+
+        </div>
+
+        <!-- ==========================================
+             DESKTOP GOALS
+             ========================================== -->
+        <div class="desktop-only" style="display: flex; flex-direction: column; gap: 24px;">        <!-- 1. GREETING HEADER & TABS -->
         <div>
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
             <div style="display: flex; align-items: center; gap: 12px;">
@@ -319,9 +362,8 @@ class GoalsView {
               </div>
             </div>
 
-          </div>
-
         </div>
+        </div> <!-- End Desktop Only -->
 
       </div>
     `;

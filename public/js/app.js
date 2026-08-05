@@ -122,34 +122,36 @@ class App {
           </div>
         </main>
 
-        <!-- Floating Action Button (FAB) -->
-        ${window.fabComponent ? window.fabComponent.render(state) : ''}
+        <!-- Floating Action Button (FAB) for Mobile -->
+        <button class="mobile-fab-floating" onclick="window.mobileBottomSheet.open('actions')" aria-label="Quick Actions" title="Quick Actions">
+          +
+        </button>
 
-        <!-- Native Mobile Bottom Navigation Bar -->
+        <!-- Native Mobile Bottom Navigation Bar (5 Tabs) -->
         <nav class="mobile-bottom-nav">
           <a class="mobile-nav-tab ${state.currentView === 'dashboard' ? 'active' : ''}" onclick="window.store.setState({ currentView: 'dashboard' })">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
             <span>Home</span>
           </a>
 
-          <a class="mobile-nav-tab ${state.currentView === 'goals' ? 'active' : ''}" onclick="window.store.setState({ currentView: 'goals' })">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            <span>Goals</span>
+          <a class="mobile-nav-tab ${state.currentView === 'plannerHub' ? 'active' : ''}" onclick="window.store.setState({ currentView: 'plannerHub' })">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Planner</span>
           </a>
 
-          <!-- Elevated Center FAB Button -->
-          <button class="mobile-fab-center" onclick="window.mobileBottomSheet.open('actions')" aria-label="Create item">
-            +
-          </button>
-
-          <a class="mobile-nav-tab ${state.currentView === 'tasks' ? 'active' : ''}" onclick="window.store.setState({ currentView: 'tasks' })">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline></svg>
-            <span>Tasks</span>
+          <a class="mobile-nav-tab ${state.currentView === 'academic' ? 'active' : ''}" onclick="window.store.setState({ currentView: 'academic' })">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            <span>Academic</span>
           </a>
 
-          <a class="mobile-nav-tab ${state.currentView === 'calendar' ? 'active' : ''}" onclick="window.store.setState({ currentView: 'calendar' })">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>Calendar</span>
+          <a class="mobile-nav-tab ${state.currentView === 'ai' ? 'active' : ''}" onclick="window.store.setState({ currentView: 'ai' })">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12 7.477 2 12 2z"></path><circle cx="9" cy="10" r="1.5" fill="currentColor"></circle><circle cx="15" cy="10" r="1.5" fill="currentColor"></circle><path d="M8 15h8"></path></svg>
+            <span>AI</span>
+          </a>
+
+          <a class="mobile-nav-tab ${state.currentView === 'profile' ? 'active' : ''}" onclick="window.store.setState({ currentView: 'profile' })">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>Profile</span>
           </a>
         </nav>
 
@@ -183,6 +185,9 @@ class App {
   renderActiveView(state) {
     switch (state.currentView) {
       case 'dashboard': return window.dashboardView ? window.dashboardView.render(state) : '';
+      case 'plannerHub': return window.plannerHubView ? window.plannerHubView.render(state) : '';
+      case 'ai': return window.aiView ? window.aiView.render(state) : '';
+      case 'profile': return window.profileView ? window.profileView.render(state) : '';
       case 'goals': return window.goalsView ? window.goalsView.render(state) : '';
       case 'tasks': return window.tasksView ? window.tasksView.render(state) : '';
       case 'habits': return window.habitsView ? window.habitsView.render(state) : '';

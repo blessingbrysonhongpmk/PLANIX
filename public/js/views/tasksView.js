@@ -23,8 +23,41 @@ class TasksView {
 
     return `
       <div class="view-container animate-fade-in" style="padding-right: 10px;">
+        
+        <!-- ==========================================
+             NATIVE MOBILE TASKS (No Kanban, Simple List)
+             ========================================== -->
+        <div class="mobile-only" style="padding-bottom: 80px;">
+          <div style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none;">
+            <button class="mobile-chip ${this.filter === 'all' ? 'active' : ''}" onclick="window.tasksView.filter = 'all'; window.store.notify()">All ${counts.all}</button>
+            <button class="mobile-chip ${this.filter === 'pending' ? 'active' : ''}" onclick="window.tasksView.filter = 'pending'; window.store.notify()">Pending ${counts.pending}</button>
+            <button class="mobile-chip ${this.filter === 'completed' ? 'active' : ''}" onclick="window.tasksView.filter = 'completed'; window.store.notify()">Done ${counts.done}</button>
+          </div>
 
-        <!-- 1. HEADER & VIEW TOGGLES -->
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${tasks.map(task => `
+              <div style="background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 16px; display: flex; align-items: flex-start; gap: 14px;" onclick="window.tasksView.toggleTask('${task.id}')">
+                <div style="width: 26px; height: 26px; border-radius: 50%; border: 2px solid ${task.completed ? '#10B981' : '#4A4A5A'}; background: ${task.completed ? '#10B981' : 'transparent'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  ${task.completed ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: 15px; font-weight: 600; color: ${task.completed ? '#8E8E9E' : '#FFF'}; text-decoration: ${task.completed ? 'line-through' : 'none'};">${task.text}</div>
+                  <div style="font-size: 12px; color: #8E8E9E; margin-top: 6px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    ${task.date ? `<span>📅 ${task.date}</span>` : ''}
+                    ${task.priority === 'high' || task.priority === 'urgent' ? `<span style="color: #E50914;">🔥 High</span>` : ''}
+                    ${task.label ? `<span style="background: #1A1A22; padding: 2px 8px; border-radius: 12px; font-size: 10px;">${task.label}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+            ${tasks.length === 0 ? '<div style="text-align: center; color: #8E8E9E; padding: 40px; font-size: 14px;">No tasks found.</div>' : ''}
+          </div>
+        </div>
+
+        <!-- ==========================================
+             DESKTOP TASKS (List & Kanban)
+             ========================================== -->
+        <div class="desktop-only">        <!-- 1. HEADER & VIEW TOGGLES -->
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
           <div style="display: flex; align-items: center; gap: 12px;">
             <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#E50914" stroke-width="2.5"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
@@ -269,6 +302,8 @@ class TasksView {
             ${doneTasks.length === 0 ? `<div style="font-size: 12px; color: var(--text-tertiary); text-align: center; padding: 20px;">No completed tasks</div>` : doneTasks.map(renderKanbanCard).join('')}
           </div>
         </div>
+        </div>
+        </div> <!-- End Desktop Only -->
 
       </div>
     `;

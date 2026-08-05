@@ -41,7 +41,60 @@ class CalendarView {
     };
 
     return `
-      <div class="view-container animate-fade-in" style="padding-right: 10px; display: grid; grid-template-columns: 1fr 280px; gap: 32px; min-height: 100vh;">
+      <div class="view-container animate-fade-in" style="padding-right: 10px;">
+        
+        <!-- ==========================================
+             NATIVE MOBILE CALENDAR (Agenda View)
+             ========================================== -->
+        <div class="mobile-only" style="padding-bottom: 80px;">
+          
+          <div style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none;">
+            <button class="mobile-chip ${this.viewMode === 'Agenda' ? 'active' : ''}" onclick="window.calendarView.viewMode = 'Agenda'; window.store.notify()">Agenda</button>
+            <button class="mobile-chip ${this.viewMode === 'Day' ? 'active' : ''}" onclick="window.calendarView.viewMode = 'Day'; window.store.notify()">Day</button>
+            <button class="mobile-chip ${this.viewMode === 'Week' ? 'active' : ''}" onclick="window.calendarView.viewMode = 'Week'; window.store.notify()">Week</button>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- Dummy Agenda Data (Replace with real data logic) -->
+            <div>
+              <div style="font-size: 13px; font-weight: 700; color: #E50914; margin-bottom: 10px; text-transform: uppercase;">Today, Sep 23</div>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="background: #121217; border: 1px solid #22222A; border-radius: 12px; padding: 16px; display: flex; gap: 12px; border-left: 4px solid #E50914;">
+                  <div style="font-size: 14px; font-weight: 700; color: #FFF; width: 60px; flex-shrink: 0;">10:00</div>
+                  <div>
+                    <div style="font-size: 15px; font-weight: 700; color: #FFF;">Advanced Data Structures</div>
+                    <div style="font-size: 11px; color: #8E8E9E; margin-top: 4px;">Lecture Hall B</div>
+                  </div>
+                </div>
+                <div style="background: #121217; border: 1px solid #22222A; border-radius: 12px; padding: 16px; display: flex; gap: 12px; border-left: 4px solid #3B82F6;">
+                  <div style="font-size: 14px; font-weight: 700; color: #FFF; width: 60px; flex-shrink: 0;">14:30</div>
+                  <div>
+                    <div style="font-size: 15px; font-weight: 700; color: #FFF;">Group Study Session</div>
+                    <div style="font-size: 11px; color: #8E8E9E; margin-top: 4px;">Library Room 4</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: 13px; font-weight: 700; color: #8E8E9E; margin-bottom: 10px; text-transform: uppercase;">Tomorrow, Sep 24</div>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="background: #121217; border: 1px solid #22222A; border-radius: 12px; padding: 16px; display: flex; gap: 12px; border-left: 4px solid #10B981;">
+                  <div style="font-size: 14px; font-weight: 700; color: #FFF; width: 60px; flex-shrink: 0;">09:00</div>
+                  <div>
+                    <div style="font-size: 15px; font-weight: 700; color: #FFF;">Algorithm Design Final</div>
+                    <div style="font-size: 11px; color: #8E8E9E; margin-top: 4px;">Main Auditorium</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             DESKTOP CALENDAR
+             ========================================== -->
+        <div class="desktop-only" style="display: grid; grid-template-columns: 1fr 280px; gap: 32px; min-height: 100vh;">
 
         <!-- 1. LEFT MAIN CALENDAR GRID -->
         <div style="display: flex; flex-direction: column;">
@@ -355,7 +408,7 @@ class CalendarView {
             </div>
           </div>
 
-        </div>
+        </div> <!-- End Desktop Only -->
       </div>
     `;
   }
