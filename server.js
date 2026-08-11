@@ -54,30 +54,34 @@ app.get('*', (_req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Start Server
+// Start Server with Automatic Port Fallback
 if (require.main === module) {
-  const server = app.listen(PORT, () => {
-    console.log(`
+  function startServer(portToUse) {
+    const server = app.listen(portToUse, () => {
+      console.log(`
 ╔════════════════════════════════════════════════╗
 ║                                                ║
 ║  ✨ Planix — AI Personal Life Operating System ║
 ║                                                ║
-║  🚀 Running at : http://localhost:${PORT}        ║
+║  🚀 Running at : http://localhost:${portToUse}        ║
 ║  📁 Storage    : JSON / SQLite Data Layer      ║
 ║  🤖 Multi-AI   : Active & Online               ║
 ║                                                ║
 ╚════════════════════════════════════════════════╝
-    `);
-  });
+      `);
+    });
 
-  server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-      console.error(`\n⚠️ Port ${PORT} is already in use. Please close existing server processes or run on a different PORT.`);
-      process.exit(1);
-    } else {
-      console.error('Server error:', err);
-    }
-  });
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.warn(`⚠️ Port ${portToUse} is in use. Trying port ${portToUse + 1}...`);
+        startServer(portToUse + 1);
+      } else {
+        console.error('Server error:', err);
+      }
+    });
+  }
+
+  startServer(PORT);
 }
 
 module.exports = app;

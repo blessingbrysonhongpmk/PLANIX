@@ -170,6 +170,9 @@ class App {
         <!-- AI Analysis Modal -->
         ${window.analysisModal ? window.analysisModal.render() : ''}
 
+        <!-- Timetable Photo AI Scanner Modal -->
+        ${window.timetableModal ? window.timetableModal.render() : ''}
+
         <!-- Mobile Bottom Sheet Drawer -->
         ${window.mobileBottomSheet ? window.mobileBottomSheet.render(state) : ''}
 

@@ -19,6 +19,45 @@ class AcademicView {
     // Delegate rendering to sub-sections
     if (this.activeTab === 'documents') {
       content = window.intelligenceView ? window.intelligenceView.render(state) : '<div class="ah-card" style="padding: 24px;">Documents Loading...</div>';
+    } else if (this.activeTab === 'timetable') {
+      const routines = state.routineBlocks || [];
+      content = `
+        <div class="ah-card" style="padding: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+              <h2 style="font-size: 18px; font-weight: 800; color: #FFF; margin: 0;">Academic Timetable</h2>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Weekly recurring classes, lectures, and laboratory sessions.</div>
+            </div>
+            <button class="btn btn-primary" style="background: #E50914; font-size: 13px;" onclick="window.timetableModal && window.timetableModal.open()">
+              📷 Scan Timetable Photo
+            </button>
+          </div>
+
+          ${routines.length === 0 ? `
+            <div style="text-align: center; padding: 40px 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
+              <div style="font-size: 40px; margin-bottom: 10px;">📅</div>
+              <div style="font-size: 16px; font-weight: 700; color: #FFF;">No Timetable Uploaded</div>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 6px; max-width: 400px; margin-left: auto; margin-right: auto;">Upload your semester timetable photo and let Tesseract AI extract your classes automatically.</div>
+              <button class="btn btn-primary" style="margin-top: 16px; background: #E50914;" onclick="window.timetableModal && window.timetableModal.open()">📷 Scan Timetable Photo</button>
+            </div>
+          ` : `
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              ${routines.map(r => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                  <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="font-size: 14px; font-weight: 800; color: #E50914; width: 60px;">${r.time || '09:00'}</div>
+                    <div>
+                      <div style="font-size: 14px; font-weight: 700; color: #FFF;">${r.title}</div>
+                      <div style="font-size: 12px; color: var(--text-muted);">${r.day || 'Daily'} • ${r.duration || '60 mins'}</div>
+                    </div>
+                  </div>
+                  <span style="padding: 4px 10px; border-radius: 12px; background: rgba(229,9,20,0.15); color: #E50914; font-size: 11px; font-weight: 700;">${r.category || 'Study'}</span>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      `;
     } else {
       content = `
         <div class="ah-card" style="padding: 40px 24px; text-align: center; border: 1px dashed rgba(255, 255, 255, 0.1);">

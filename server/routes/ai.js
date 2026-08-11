@@ -106,12 +106,15 @@ router.post('/second-brain-search', (req, res) => {
   }
 });
 
-// POST /api/ai/generate-roadmap
-router.post('/generate-roadmap', (req, res) => {
+// POST /api/ai/parse-timetable-ocr
+router.post('/parse-timetable-ocr', async (req, res) => {
   try {
-    const { goal } = req.body;
-    const phases = aiService.generateRoadmap(goal || '');
-    res.json({ success: true, goal, phases });
+    const { ocrText } = req.body;
+    if (!ocrText || !ocrText.trim()) {
+      return res.status(400).json({ success: false, error: 'ocrText is required' });
+    }
+    const result = await aiService.parseTimetableText(ocrText);
+    res.json(result);
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

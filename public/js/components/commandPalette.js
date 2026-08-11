@@ -14,7 +14,9 @@ class CommandPaletteComponent {
 
     const navShortcuts = [
       { label: 'Dashboard', icon: '🏠', action: "window.store.setState({ currentView: 'dashboard', isCommandPaletteOpen: false })" },
+      { label: 'Scan Timetable Photo (AI)', icon: '📷', action: "window.store.setState({ isCommandPaletteOpen: false }); window.timetableModal && window.timetableModal.open()" },
       { label: 'Tasks', icon: '✅', action: "window.store.setState({ currentView: 'tasks', isCommandPaletteOpen: false })" },
+      { label: 'Routine Schedule', icon: '⏱️', action: "window.store.setState({ currentView: 'routine', isCommandPaletteOpen: false })" },
       { label: 'Goals', icon: '🎯', action: "window.store.setState({ currentView: 'goals', isCommandPaletteOpen: false })" },
       { label: 'Habits', icon: '🔁', action: "window.store.setState({ currentView: 'habits', isCommandPaletteOpen: false })" },
       { label: 'Focus Mode', icon: '⏱️', action: "window.store.setState({ currentView: 'study', isCommandPaletteOpen: false })" },

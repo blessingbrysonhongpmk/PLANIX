@@ -13,9 +13,26 @@ class RoutineView {
             <h1 class="page-title">Routine</h1>
             <p class="page-description">Design structured daily time-blocks for deep work, study, coding, and rest.</p>
           </div>
-          <div class="page-actions">
+          <div class="page-actions" style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary" style="border: 1px solid #E50914; color: #FFF; background: rgba(229,9,20,0.12);" onclick="window.timetableModal && window.timetableModal.open()">
+              📷 Scan Timetable Photo
+            </button>
             <button class="btn btn-primary" onclick="window.modalComponent.open('timeblock')">+ Add Time Block</button>
           </div>
+        </div>
+
+        <!-- AI Timetable Scanner Banner Card -->
+        <div class="card" style="padding: 16px 20px; background: linear-gradient(135deg, rgba(229,9,20,0.15) 0%, rgba(20,20,28,0.9) 100%); border: 1px solid rgba(229,9,20,0.3); border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: #E50914; color: #FFF; font-size: 20px; display: flex; align-items: center; justify-content: center; font-weight: 800;">📷</div>
+            <div>
+              <div style="font-size: 14px; font-weight: 700; color: #FFF;">Import Routine from Timetable Photo</div>
+              <div style="font-size: 12px; color: var(--text-tertiary);">Upload class or work schedule photo to auto-generate daily time blocks using Tesseract AI.</div>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="padding: 8px 18px; font-size: 13px; background: #E50914; white-space: nowrap;" onclick="window.timetableModal && window.timetableModal.open()">
+            Scan Timetable Photo
+          </button>
         </div>
 
         ${blocks.length === 0 ? `
@@ -23,8 +40,11 @@ class RoutineView {
             <div class="empty-state">
               <div class="empty-state-icon">⏱️</div>
               <div class="empty-state-title">No routine blocks set</div>
-              <div class="empty-state-desc">Assign specific focus blocks to your day to build momentum and eliminate procrastination.</div>
-              <button class="btn btn-primary" onclick="window.modalComponent.open('timeblock')">Create First Time Block</button>
+              <div class="empty-state-desc">Assign specific focus blocks to your day, or scan a timetable photo to auto-generate your schedule.</div>
+              <div style="display: flex; gap: 10px; justify-content: center; margin-top: 14px;">
+                <button class="btn btn-primary" onclick="window.modalComponent.open('timeblock')">Create Time Block</button>
+                <button class="btn btn-secondary" onclick="window.timetableModal && window.timetableModal.open()">📷 Scan Timetable Photo</button>
+              </div>
             </div>
           </div>
         ` : `
