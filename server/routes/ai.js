@@ -5,9 +5,42 @@
 
 const express = require('express');
 const router = express.Router();
+const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 const aiService = require('../services/aiService');
 const predictionService = require('../services/predictionService');
 const storageService = require('../db/storageService');
+const documentProcessor = require('../services/documentProcessor');
+
+// Configure multer for in-chat document uploads (temp directory)
+const CHAT_UPLOAD_DIR = path.join(__dirname, '../../uploads/chat_temp');
+if (!fs.existsSync(CHAT_UPLOAD_DIR)) {
+  fs.mkdirSync(CHAT_UPLOAD_DIR, { recursive: true });
+}
+
+const chatUploadStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, CHAT_UPLOAD_DIR),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `chat_${Date.now()}_${Math.random().toString(36).slice(2, 6)}${ext}`);
+  }
+});
+
+const chatUpload = multer({
+  storage: chatUploadStorage,
+  limits: { fileSize: 30 * 1024 * 1024 }, // 30 MB max for chat attachments
+  fileFilter: (_req, file, cb) => {
+    const allowed = ['.pdf', '.docx', '.pptx', '.png', '.jpg', '.jpeg', '.txt', '.md', '.csv', '.json', '.js', '.py', '.html', '.css'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Unsupported format: ${ext}. Supported: PDF, DOCX, PNG, JPG, TXT, MD, CSV, JSON, JS, PY, HTML, CSS.`));
+    }
+  }
+});
+
 
 // POST /api/ai/parse-routine
 router.post('/parse-routine', async (req, res) => {
@@ -76,16 +109,165 @@ router.get('/predictions', (req, res) => {
   }
 });
 
+// GET /api/ai/models
+router.get('/models', (_req, res) => {
+  try {
+    const models = aiService.getAvailableModels();
+    res.json({ success: true, models });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/ai/generate-image
+router.post('/generate-image', async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    const result = await aiService.generateImage(prompt);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/ai/web-search
+router.post('/web-search', async (req, res) => {
+  try {
+    const { query } = req.body;
+    const result = await aiService.webSearch(query);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/ai/stream-chat (Server-Sent Events Real-Time Streaming)
+router.post('/stream-chat', async (req, res) => {
+  try {
+    const { prompt, model, options, includeContext = true } = req.body;
+    
+    let context = {};
+    if (includeContext) {
+      context.tasks = storageService.read('tasks');
+      context.notes = storageService.read('notes');
+      context.habits = storageService.read('habits');
+      context.journal = storageService.read('journal');
+    }
+
+    await aiService.streamChatResponse(prompt || '', context, { model, ...options }, res);
+  } catch (err) {
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: err.message });
+    } else {
+      res.write(`data: ${JSON.stringify({ error: err.message, done: true })}\n\n`);
+      res.end();
+    }
+  }
+});
+
+// POST /api/ai/chat-with-document (Upload PDF/DOCX/Image, extract text, stream AI analysis)
+router.post('/chat-with-document', chatUpload.single('file'), async (req, res) => {
+  let tempFilePath = null;
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No file uploaded.' });
+    }
+
+    tempFilePath = req.file.path;
+    const { originalname, mimetype } = req.file;
+    const userPrompt = req.body.prompt || '';
+    const model = req.body.model || 'auto';
+    const includeContext = req.body.includeContext !== 'false';
+
+    // Extract text from the uploaded document
+    let extractionResult;
+    try {
+      extractionResult = await documentProcessor.extractTextFromFile(tempFilePath, mimetype, originalname);
+    } catch (extractErr) {
+      // Clean up temp file
+      if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
+      return res.status(422).json({
+        success: false,
+        error: `Could not extract text from ${originalname}: ${extractErr.message}`
+      });
+    }
+
+    let context = {};
+    if (includeContext) {
+      context.tasks = storageService.read('tasks');
+      context.notes = storageService.read('notes');
+      context.habits = storageService.read('habits');
+    }
+
+    // Stream AI analysis of the extracted document content
+    await aiService.streamChatWithDocument(
+      userPrompt,
+      extractionResult.text,
+      originalname,
+      context,
+      { model },
+      res
+    );
+
+    // Clean up temp file after processing
+    if (tempFilePath && fs.existsSync(tempFilePath)) {
+      fs.unlinkSync(tempFilePath);
+    }
+  } catch (err) {
+    // Clean up temp file on error
+    if (tempFilePath && fs.existsSync(tempFilePath)) {
+      try { fs.unlinkSync(tempFilePath); } catch (e) { /* ignore */ }
+    }
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: err.message });
+    } else {
+      res.write(`data: ${JSON.stringify({ error: err.message, done: true })}\n\n`);
+      res.end();
+    }
+  }
+});
+
 // POST /api/ai/chat
 router.post('/chat', async (req, res) => {
   try {
-    const { prompt } = req.body;
-    const tasks = storageService.read('tasks');
-    const notes = storageService.read('notes');
-    const habits = storageService.read('habits');
+    const { prompt, model, options, includeContext = true } = req.body;
+    
+    let context = {};
+    if (includeContext) {
+      context.tasks = storageService.read('tasks');
+      context.notes = storageService.read('notes');
+      context.habits = storageService.read('habits');
+      context.journal = storageService.read('journal');
+    }
 
-    const reply = await aiService.processChat(prompt || '', { tasks, notes, habits });
-    res.json({ success: true, reply });
+    const result = await aiService.processChat(prompt || '', context, { model, ...options });
+
+    // Handle DB mutations if system actions were generated
+    if (result.actions && Array.isArray(result.actions)) {
+      for (const act of result.actions) {
+        if (act.type === 'CREATE_TASK') {
+          const tasks = storageService.read('tasks');
+          tasks.unshift(act.payload);
+          storageService.write('tasks', tasks);
+        } else if (act.type === 'CREATE_HABIT') {
+          const habits = storageService.read('habits');
+          habits.unshift(act.payload);
+          storageService.write('habits', habits);
+        } else if (act.type === 'CREATE_NOTE') {
+          const notes = storageService.read('notes');
+          notes.unshift(act.payload);
+          storageService.write('notes', notes);
+        }
+      }
+    }
+
+    res.json({
+      success: true,
+      reply: result.reply,
+      image: result.image || null,
+      model: result.model || 'Planix AI Engine',
+      actions: result.actions || []
+    });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -101,6 +283,28 @@ router.post('/second-brain-search', (req, res) => {
 
     const results = aiService.searchSecondBrain(query || '', { notes, tasks, journal });
     res.json({ success: true, query, memoryResults: results });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/ai/web-scrape
+router.post('/web-scrape', async (req, res) => {
+  try {
+    const { url } = req.body;
+    const result = await aiService.scrapeWebUrl(url);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/ai/collect-internet-data
+router.post('/collect-internet-data', async (req, res) => {
+  try {
+    const { target } = req.body;
+    const result = await aiService.collectInternetData(target);
+    res.json(result);
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

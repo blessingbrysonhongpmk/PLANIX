@@ -108,45 +108,34 @@ class AIDrawerComponent {
     this.messages.push({ sender: 'user', text: prompt });
     this.updateMessagesUI();
 
-    // Check if user is asking to add task automatically
-    const lower = prompt.toLowerCase();
-    if (lower.startsWith('add task') || lower.startsWith('remind me') || lower.startsWith('study ')) {
-      const taskText = prompt.replace(/^add task/i, '').replace(/^remind me to/i, '').trim();
-      const newTask = {
-        id: `t_${Date.now()}`,
-        text: taskText || prompt,
-        completed: false,
-        priority: 'high',
-        category: 'study',
-        createdAt: new Date().toISOString()
-      };
+    try {
+      // Call AI Central Backend API
+      const res = await window.apiClient.post('/ai/chat', { prompt });
+      let reply = res.reply;
 
-      window.store.setState(prev => ({ tasks: [newTask, ...prev.tasks] }));
-      await window.apiClient.post('/tasks', newTask);
-
-      this.messages.push({
-        sender: 'ai',
-        text: `✅ **Task Created!**\n\n"${newTask.text}" has been added to your Task list!`
-      });
-      this.updateMessagesUI();
-      return;
-    }
-
-    // Call AI Backend API
-    const res = await window.apiClient.post('/ai/chat', { prompt });
-    let reply = res.reply;
-
-    if (!reply || res.offline) {
-      if (lower.includes('motivation') || lower.includes('quote')) {
-        reply = "✨ **Daily Motivation**:\n\n\"Hard work always brings success! Keep going step by step today.\" 💪";
-      } else if (lower.includes('routine') || lower.includes('plan')) {
-        reply = "📚 **Simple Daily Schedule**:\n1. 🌅 Morning (07:00 AM): 30 mins study + Exercise\n2. ☀️ Afternoon (02:00 PM): Practice problems & notes\n3. 🌙 Evening (08:00 PM): 15 mins review & plan for tomorrow!";
-      } else {
-        reply = `👍 You have ${window.store.state.tasks.filter(t=>!t.completed).length} pending tasks today. Focus on one task at a time for best results!`;
+      if (!reply || res.offline) {
+        const lower = prompt.toLowerCase();
+        if (lower.includes('motivation') || lower.includes('quote')) {
+          reply = "✨ **Daily Motivation**:\n\n\"Hard work always brings success! Keep going step by step today.\" 💪";
+        } else if (lower.includes('routine') || lower.includes('plan')) {
+          reply = "📚 **Simple Daily Schedule**:\n1. 🌅 Morning (07:00 AM): 30 mins study + Exercise\n2. ☀️ Afternoon (02:00 PM): Practice problems & notes\n3. 🌙 Evening (08:00 PM): 15 mins review & plan for tomorrow!";
+        } else {
+          reply = `👍 You have ${window.store?.state?.tasks?.filter(t=>!t.completed).length || 0} pending tasks today. Focus on one task at a time for best results!`;
+        }
       }
+
+      // If backend executed system actions, refresh store
+      if (res.actions && res.actions.length > 0 && window.store) {
+        window.store.fetchTasks();
+        window.store.fetchNotes();
+        window.store.fetchHabits();
+      }
+
+      this.messages.push({ sender: 'ai', text: reply });
+    } catch (err) {
+      this.messages.push({ sender: 'ai', text: '⚠️ Connection error. Using offline assistant engine.' });
     }
 
-    this.messages.push({ sender: 'ai', text: reply });
     this.updateMessagesUI();
   }
 
