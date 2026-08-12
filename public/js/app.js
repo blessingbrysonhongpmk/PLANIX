@@ -36,7 +36,7 @@ class App {
     if (!root) return;
 
     root.innerHTML = `
-      <div class="app-container">
+      <div class="app-container ${state.currentView === 'ai' ? 'mobile-view-ai' : ''}">
         <!-- Mobile Compact Top Header Bar -->
         <header class="mobile-header-bar">
           <a href="#" class="mobile-brand" onclick="event.preventDefault(); window.store.setState({ currentView: 'dashboard' })">
@@ -133,7 +133,7 @@ class App {
         </main>
 
         <!-- Floating Action Button (FAB) for Mobile -->
-        <button class="mobile-fab-floating" onclick="window.mobileBottomSheet.open('actions')" aria-label="Quick Actions" title="Quick Actions">
+        <button class="mobile-fab-floating" style="${state.currentView === 'ai' ? 'display: none !important;' : ''}" onclick="window.mobileBottomSheet.open('actions')" aria-label="Quick Actions" title="Quick Actions">
           +
         </button>
 

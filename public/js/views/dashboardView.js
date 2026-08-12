@@ -42,40 +42,40 @@ class DashboardView {
           
           <!-- 1. HEADER & GREETING -->
           <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-            <div>
-              <p style="font-size: 13px; color: var(--text-tertiary); margin: 0 0 2px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Home</p>
-              <h1 style="font-size: 24px; font-weight: 800; color: #FFF; margin: 0; letter-spacing: -0.02em;">${greeting}, <span style="color: #E50914;">${userName}</span></h1>
+            <div style="overflow: hidden; max-width: 80%;">
+              <p style="font-size: 11px; color: var(--text-tertiary); margin: 0 0 2px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Home</p>
+              <h1 style="font-size: 22px; font-weight: 800; color: #FFF; margin: 0; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${greeting}, <span style="color: #E50914;">${userName}</span></h1>
             </div>
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #E50914, #B91C2D); color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #E50914, #B91C2D); color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; flex-shrink: 0;">
               ${userInitial}
             </div>
           </div>
 
           <!-- 2. HORIZONTAL QUICK STATS -->
-          <div style="display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; margin: 0 -16px; padding: 0 16px;">
+          <div style="display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; margin: 0 -12px; padding: 0 12px;">
             
-            <div style="min-width: 130px; background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 14px;">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(229, 9, 20, 0.12); color: #E50914; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+            <div style="flex: 1; min-width: 100px; background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                <div style="width: 24px; height: 24px; border-radius: 6px; background: rgba(229, 9, 20, 0.12); color: #E50914; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
                 <span style="font-size: 11px; font-weight: 600; color: #8E8E9E;">Tasks</span>
               </div>
-              <div style="font-size: 20px; font-weight: 800; color: #FFF;">${completedTasks.length}<span style="color: #4A4A5A; font-size: 14px;">/${tasks.length}</span></div>
+              <div style="font-size: 18px; font-weight: 800; color: #FFF; white-space: nowrap;">${completedTasks.length}<span style="color: #4A4A5A; font-size: 13px;">/${tasks.length}</span></div>
             </div>
 
-            <div style="min-width: 130px; background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 14px;">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(139, 92, 246, 0.12); color: #8B5CF6; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+            <div style="flex: 1; min-width: 100px; background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                <div style="width: 24px; height: 24px; border-radius: 6px; background: rgba(139, 92, 246, 0.12); color: #8B5CF6; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
                 <span style="font-size: 11px; font-weight: 600; color: #8E8E9E;">Focus</span>
               </div>
-              <div style="font-size: 20px; font-weight: 800; color: #FFF;">0<span style="color: #4A4A5A; font-size: 14px;"> hrs</span></div>
+              <div style="font-size: 18px; font-weight: 800; color: #FFF; white-space: nowrap;">0<span style="color: #4A4A5A; font-size: 13px;"> hrs</span></div>
             </div>
 
-            <div style="min-width: 130px; background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 14px;">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(16, 185, 129, 0.12); color: #10B981; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
+            <div style="flex: 1; min-width: 100px; background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                <div style="width: 24px; height: 24px; border-radius: 6px; background: rgba(16, 185, 129, 0.12); color: #10B981; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
                 <span style="font-size: 11px; font-weight: 600; color: #8E8E9E;">Habits</span>
               </div>
-              <div style="font-size: 20px; font-weight: 800; color: #FFF;">${habitsDone}<span style="color: #4A4A5A; font-size: 14px;">/${totalHabits}</span></div>
+              <div style="font-size: 18px; font-weight: 800; color: #FFF; white-space: nowrap;">${habitsDone}<span style="color: #4A4A5A; font-size: 13px;">/${totalHabits}</span></div>
             </div>
 
           </div>
