@@ -14,7 +14,8 @@ const storageService = require('../db/storageService');
 const documentProcessor = require('../services/documentProcessor');
 
 // Configure multer for in-chat document uploads (temp directory)
-const CHAT_UPLOAD_DIR = path.join(__dirname, '../../uploads/chat_temp');
+const isVercel = process.env.VERCEL || process.env.NOW_BUILDER;
+const CHAT_UPLOAD_DIR = isVercel ? path.join('/tmp', 'uploads/chat_temp') : path.join(__dirname, '../../uploads/chat_temp');
 if (!fs.existsSync(CHAT_UPLOAD_DIR)) {
   fs.mkdirSync(CHAT_UPLOAD_DIR, { recursive: true });
 }

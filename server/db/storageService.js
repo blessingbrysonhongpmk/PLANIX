@@ -7,7 +7,11 @@
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = path.join(__dirname, '../../data');
+const isVercel = process.env.VERCEL || process.env.NOW_BUILDER;
+const SEED_DATA_DIR = path.join(__dirname, '../../data');
+const DATA_DIR = isVercel
+  ? path.join('/tmp', 'data')
+  : SEED_DATA_DIR;
 
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -58,7 +62,16 @@ class StorageService {
   init() {
     for (const [key, filePath] of Object.entries(this.files)) {
       if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, JSON.stringify([], null, 2), 'utf8');
+        const seedPath = path.join(SEED_DATA_DIR, `${key}.json`);
+        if (fs.existsSync(seedPath)) {
+          try {
+            fs.copyFileSync(seedPath, filePath);
+          } catch {
+            fs.writeFileSync(filePath, JSON.stringify([], null, 2), 'utf8');
+          }
+        } else {
+          fs.writeFileSync(filePath, JSON.stringify([], null, 2), 'utf8');
+        }
       }
     }
   }

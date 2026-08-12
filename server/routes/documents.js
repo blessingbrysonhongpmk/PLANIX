@@ -15,7 +15,8 @@ const aiService = require('../services/aiService');
 const { authenticateToken, optionalAuth } = require('../middleware/auth');
 
 // Configure Multer Storage in /uploads
-const UPLOAD_DIR = path.join(__dirname, '../../uploads');
+const isVercel = process.env.VERCEL || process.env.NOW_BUILDER;
+const UPLOAD_DIR = isVercel ? path.join('/tmp', 'uploads') : path.join(__dirname, '../../uploads');
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
