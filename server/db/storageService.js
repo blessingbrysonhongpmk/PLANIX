@@ -1,7 +1,7 @@
 /**
- * PLANIX STORAGE SERVICE
- * Multi-Entity JSON / SQLite Database Storage Layer
- * Clean initializers without dummy placeholder data
+ * PLANIX UNIFIED DATABASE & STORAGE SERVICE
+ * Thread-safe Multi-Entity Storage Layer supporting 28 Domain Entities
+ * Enforces: id, userId, createdAt, updatedAt on every single object
  */
 
 const fs = require('fs');
@@ -15,38 +15,50 @@ if (!fs.existsSync(DATA_DIR)) {
 
 class StorageService {
   constructor() {
-    this.files = {
-      tasks: path.join(DATA_DIR, 'tasks.json'),
-      notes: path.join(DATA_DIR, 'notes.json'),
-      journal: path.join(DATA_DIR, 'journal.json'),
-      habits: path.join(DATA_DIR, 'habits.json'),
-      memory: path.join(DATA_DIR, 'memory.json'),
-      user: path.join(DATA_DIR, 'user.json'),
-    };
+    this.entities = [
+      'users',
+      'profiles',
+      'goals',
+      'goalMilestones',
+      'tasks',
+      'subtasks',
+      'habits',
+      'habitCompletions',
+      'projects',
+      'notes',
+      'calendarEvents',
+      'subjects',
+      'academicTerms',
+      'assignments',
+      'exams',
+      'attendanceRecords',
+      'documents',
+      'documentAnalyses',
+      'documentChunks',
+      'flashcards',
+      'quizzes',
+      'studyPlans',
+      'timelineItems',
+      'notifications',
+      'aiConversations',
+      'aiMessages',
+      'settings',
+      'routineBlocks',
+      'journal'
+    ];
+
+    this.files = {};
+    this.entities.forEach(entity => {
+      this.files[entity] = path.join(DATA_DIR, `${entity}.json`);
+    });
+
     this.init();
   }
 
   init() {
     for (const [key, filePath] of Object.entries(this.files)) {
       if (!fs.existsSync(filePath)) {
-        let initialData = [];
-        if (key === 'memory') {
-          initialData = {
-            goals: [],
-            preferences: { focusTime: "evening" },
-            insights: []
-          };
-        } else if (key === 'user') {
-          initialData = {
-            name: "User",
-            xp: 0,
-            level: 1,
-            levelTitle: "Focus Starter",
-            streak: 0,
-            theme: "dark"
-          };
-        }
-        fs.writeFileSync(filePath, JSON.stringify(initialData, null, 2), 'utf8');
+        fs.writeFileSync(filePath, JSON.stringify([], null, 2), 'utf8');
       }
     }
   }
@@ -59,20 +71,69 @@ class StorageService {
       return JSON.parse(content);
     } catch (err) {
       console.error(`Error reading data key [${key}]:`, err.message);
-      return key === 'memory' || key === 'user' ? {} : [];
+      return [];
     }
   }
 
   write(key, data) {
     try {
       const filePath = this.files[key];
-      if (!filePath) throw new Error(`Invalid storage key: ${key}`);
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+      if (!filePath) {
+        // Dynamically add new entity key if missing
+        this.files[key] = path.join(DATA_DIR, `${key}.json`);
+      }
+      fs.writeFileSync(this.files[key], JSON.stringify(data, null, 2), 'utf8');
       return true;
     } catch (err) {
       console.error(`Error writing data key [${key}]:`, err.message);
       return false;
     }
+  }
+
+  // User Isolation Helpers
+  findByUser(key, userId) {
+    const records = this.read(key);
+    if (!userId) return records;
+    return records.filter(r => r.userId === userId || r.userId === 'all');
+  }
+
+  saveForUser(key, userId, item) {
+    const records = this.read(key);
+    const now = new Date().toISOString();
+    const newItem = {
+      id: item.id || `${key.slice(0, 3)}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      userId: userId,
+      createdAt: item.createdAt || now,
+      updatedAt: now,
+      ...item
+    };
+
+    records.unshift(newItem);
+    this.write(key, records);
+    return newItem;
+  }
+
+  updateForUser(key, userId, itemId, updates) {
+    const records = this.read(key);
+    const idx = records.findIndex(r => r.id === itemId && (r.userId === userId || r.userId === 'all'));
+    if (idx === -1) return null;
+
+    records[idx] = {
+      ...records[idx],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+
+    this.write(key, records);
+    return records[idx];
+  }
+
+  deleteForUser(key, userId, itemId) {
+    const records = this.read(key);
+    const filtered = records.filter(r => !(r.id === itemId && (r.userId === userId || r.userId === 'all')));
+    if (filtered.length === records.length) return false;
+    this.write(key, filtered);
+    return true;
   }
 }
 

@@ -55,6 +55,17 @@ class AnalysisModal {
     }
   }
 
+  async commitActions() {
+    if (!this.activeDoc) return;
+    try {
+      const res = await window.documentService.commitActions(this.activeDoc.id);
+      if (window.showToast) window.showToast('🎉 Document actions committed to Tasks, Calendar & Timetable!', 'success');
+      this.close();
+    } catch (err) {
+      if (window.showToast) window.showToast('Commit failed: ' + err.message, 'error');
+    }
+  }
+
   close() {
     this.isOpen = false;
     this.activeDoc = null;
@@ -109,9 +120,15 @@ class AnalysisModal {
               </div>
             </div>
 
-            <button class="btn btn-ghost" style="padding: 6px; color: var(--text-tertiary);" onclick="window.analysisModal.close()">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <button class="btn btn-primary" style="padding: 8px 18px; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, #E50914, #B91C2D);" onclick="window.analysisModal.commitActions()">
+                ⚡ Apply Actions to Tasks & Calendar
+              </button>
+
+              <button class="btn btn-ghost" style="padding: 6px; color: var(--text-tertiary);" onclick="window.analysisModal.close()">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
           </div>
 
           <!-- ANALYZING PROGRESS STATE -->

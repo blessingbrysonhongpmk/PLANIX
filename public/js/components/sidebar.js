@@ -127,7 +127,7 @@ class SidebarComponent {
         <div class="sidebar-footer" onclick="window.store.setState({ isSettingsModalOpen: true })" tabindex="0" role="button">
           <div class="avatar" style="background: linear-gradient(135deg, #E50914 0%, #B91C2D 100%);">B</div>
           <div class="user-info">
-            <div class="user-name">${state.user?.name || 'Blessing Bryson'}</div>
+            <div class="user-name">${state.user?.name || window.store.getUserDisplayName()}</div>
             <div style="font-size: 11px; color: var(--text-tertiary); font-weight: 500;">${state.user?.role || 'AI & DS • Sem 5'}</div>
           </div>
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-tertiary)" stroke-width="2" style="margin-left: auto; flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>

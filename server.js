@@ -8,7 +8,11 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
+const authRouter = require('./server/routes/auth');
 const tasksRouter = require('./server/routes/tasks');
+const goalsRouter = require('./server/routes/goals');
+const academicsRouter = require('./server/routes/academics');
+const documentsRouter = require('./server/routes/documents');
 const notesRouter = require('./server/routes/notes');
 const journalRouter = require('./server/routes/journal');
 const habitsRouter = require('./server/routes/habits');
@@ -21,15 +25,25 @@ const PORT = process.env.PORT || 3000;
 // Middlewares & Security Headers
 app.disable('x-powered-by');
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
 app.use((_req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   next();
 });
+
+// Static Uploads Serving
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Mount Modular API Routes FIRST before static assets
+app.use('/api/auth', authRouter);
 app.use('/api/tasks', tasksRouter);
+app.use('/api/goals', goalsRouter);
+app.use('/api/academics', academicsRouter);
+app.use('/api/documents', documentsRouter);
 app.use('/api/notes', notesRouter);
 app.use('/api/journal', journalRouter);
 app.use('/api/habits', habitsRouter);
@@ -64,7 +78,7 @@ if (require.main === module) {
 ║  ✨ Planix — AI Personal Life Operating System ║
 ║                                                ║
 ║  🚀 Running at : http://localhost:${portToUse}        ║
-║  📁 Storage    : JSON / SQLite Data Layer      ║
+║  📁 Storage    : JSON / Multi-Entity Data Layer║
 ║  🤖 Multi-AI   : Active & Online               ║
 ║                                                ║
 ╚════════════════════════════════════════════════╝

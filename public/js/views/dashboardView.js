@@ -10,6 +10,9 @@ class DashboardView {
 
   render(state) {
     const user = state.user || {};
+    const userName = window.store.getUserDisplayName();
+    const userInitial = window.store.getUserInitial();
+    const greeting = window.store.getGreeting();
     const tasks = state.tasks || [];
     const habits = state.habits || [];
     const goals = state.goals || [];
@@ -27,7 +30,7 @@ class DashboardView {
 
     // Habits done count
     const habitsDone = habits.filter(h => h.completedToday).length;
-    const totalHabits = habits.length || 6;
+    const totalHabits = habits.length || 0;
 
     return `
       <div class="view-container animate-fade-in" style="display: flex; flex-direction: column; gap: 20px; padding-bottom: 80px;">
@@ -41,10 +44,10 @@ class DashboardView {
           <div style="display: flex; justify-content: space-between; align-items: flex-end;">
             <div>
               <p style="font-size: 13px; color: var(--text-tertiary); margin: 0 0 2px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Home</p>
-              <h1 style="font-size: 24px; font-weight: 800; color: #FFF; margin: 0; letter-spacing: -0.02em;">Good evening, <span style="color: #E50914;">${user.name || 'Blessing'}</span></h1>
+              <h1 style="font-size: 24px; font-weight: 800; color: #FFF; margin: 0; letter-spacing: -0.02em;">${greeting}, <span style="color: #E50914;">${userName}</span></h1>
             </div>
             <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #E50914, #B91C2D); color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;">
-              ${(user.name || 'B')[0]}
+              ${userInitial}
             </div>
           </div>
 
@@ -64,7 +67,7 @@ class DashboardView {
                 <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(139, 92, 246, 0.12); color: #8B5CF6; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
                 <span style="font-size: 11px; font-weight: 600; color: #8E8E9E;">Focus</span>
               </div>
-              <div style="font-size: 20px; font-weight: 800; color: #FFF;">4.2<span style="color: #4A4A5A; font-size: 14px;"> hrs</span></div>
+              <div style="font-size: 20px; font-weight: 800; color: #FFF;">0<span style="color: #4A4A5A; font-size: 14px;"> hrs</span></div>
             </div>
 
             <div style="min-width: 130px; background: #121217; border: 1px solid #22222A; border-radius: 16px; padding: 14px;">
@@ -145,7 +148,7 @@ class DashboardView {
         <!-- 1. GREETING HEADER -->
         <div style="margin-bottom: 4px;">
           <h1 style="font-size: 28px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em; margin: 0; display: flex; align-items: center; gap: 8px;">
-            Good evening, <span style="color: #E50914;">${user.name || 'Blessing Bryson'}</span> 👋
+            ${greeting}, <span style="color: #E50914;">${userName}</span> 👋
           </h1>
           <p style="font-size: 13px; color: var(--text-tertiary); margin-top: 4px;">
             Stay focused. Stay consistent. Your future is being built today.

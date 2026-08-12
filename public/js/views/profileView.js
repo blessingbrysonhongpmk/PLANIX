@@ -81,10 +81,10 @@ class ProfileView {
       <div class="profile-container animate-fade-in">
         
         <div class="profile-header">
-          <div class="profile-avatar">B</div>
+          <div class="profile-avatar">${window.store.getUserInitial()}</div>
           <div>
-            <h2 style="margin: 0; font-size: 18px; color: #FFF;">Blessing Bryson</h2>
-            <p style="margin: 4px 0 0 0; font-size: 13px; color: #8E8E9E;">Computer Science Engineering</p>
+            <h2 style="margin: 0; font-size: 18px; color: #FFF;">${state.user?.name || window.store.getUserDisplayName()}</h2>
+            <p style="margin: 4px 0 0 0; font-size: 13px; color: #8E8E9E;">${state.user?.major || 'Computer Science Engineering'}</p>
           </div>
         </div>
 

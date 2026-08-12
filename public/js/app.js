@@ -113,6 +113,16 @@ class App {
               <button class="btn" style="background: transparent; border: 1px solid rgba(229, 9, 20, 0.4); border-radius: 20px; padding: 6px 14px; color: #FFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;" onclick="window.store.setState({ isAiDrawerOpen: true })">
                 <span style="color: #E50914;">🤖</span> AI Assistant
               </button>
+
+              ${state.isAuthenticated ? `
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #E50914, #B91C2D); color: #FFF; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="window.store.setState({ currentView: 'profile' })" title="${state.user?.name}">
+                  ${window.store.getUserInitial()}
+                </div>
+              ` : `
+                <button class="btn btn-primary" style="padding: 6px 16px; font-size: 12px; font-weight: 700; background: #E50914;" onclick="window.authModal.open('login')">
+                  Sign In
+                </button>
+              `}
             </div>
           </header>
 
@@ -157,6 +167,9 @@ class App {
 
         <!-- Command Palette Modal -->
         ${window.commandPaletteComponent ? window.commandPaletteComponent.render(state) : ''}
+
+        <!-- Universal Auth Modal -->
+        ${window.authModal ? window.authModal.render() : ''}
 
         <!-- Universal Modal Dialog & Bottom Sheet Engine -->
         ${window.modalComponent ? window.modalComponent.render(state) : ''}

@@ -1,6 +1,6 @@
 /**
  * PLANIX UNIFIED API CLIENT
- * High-performance fetch wrapper with offline queueing and sync
+ * High-performance fetch wrapper with Auth token header injection and sync
  */
 
 class APIClient {
@@ -12,19 +12,31 @@ class APIClient {
     window.addEventListener('online', () => this.flushQueue());
   }
 
+  getAuthToken() {
+    return localStorage.getItem('planix_token') || '';
+  }
+
   saveQueue() {
     localStorage.setItem('planix_sync_queue', JSON.stringify(this.syncQueue));
   }
 
   async request(endpoint, options = {}) {
     const url = `${this.baseUrl}${endpoint}`;
+    const token = this.getAuthToken();
+
     const headers = {
-      'Content-Type': 'application/json',
       ...options.headers,
     };
 
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    if (!(options.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
+
     if (!navigator.onLine && options.method !== 'GET') {
-      // Offline mutation - queue it
       this.syncQueue.push({ endpoint, options });
       this.saveQueue();
       if (window.showToast) window.showToast('Offline mode. Changes saved locally.', 'info');
@@ -33,10 +45,13 @@ class APIClient {
 
     try {
       const res = await fetch(url, { ...options, headers });
-      if (!res.ok) {
-        throw new Error(`HTTP error ${res.status}`);
+      if (res.status === 401) {
+        // Token expired
+        console.warn('Authentication token expired or invalid.');
       }
-      return await res.json();
+
+      const data = await res.json();
+      return data;
     } catch (err) {
       if (options.method !== 'GET') {
         this.syncQueue.push({ endpoint, options });
@@ -55,15 +70,19 @@ class APIClient {
     this.saveQueue();
     
     let successCount = 0;
+    const token = this.getAuthToken();
     
     for (const item of queue) {
       try {
         const url = `${this.baseUrl}${item.endpoint}`;
-        const headers = { 'Content-Type': 'application/json', ...item.options.headers };
+        const headers = {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          ...item.options.headers
+        };
         await fetch(url, { ...item.options, headers });
         successCount++;
       } catch (e) {
-        // If it fails again, re-queue
         this.syncQueue.push(item);
       }
     }
@@ -79,7 +98,8 @@ class APIClient {
   }
 
   post(endpoint, body) {
-    return this.request(endpoint, { method: 'POST', body: JSON.stringify(body) });
+    const isFormData = body instanceof FormData;
+    return this.request(endpoint, { method: 'POST', body: isFormData ? body : JSON.stringify(body) });
   }
 
   put(endpoint, body) {
@@ -92,4 +112,3 @@ class APIClient {
 }
 
 window.apiClient = new APIClient();
-
