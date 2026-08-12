@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   PLANIX DESIGN SYSTEM — TOKENS
-   Signature Crimson Red & Obsidian Matte Dark Theme
-   Product-quality foundations for a daily-use productivity OS
+   PLANIX ULTRA DESIGN SYSTEM — PREMIUM TOKENS
+   Signature Obsidian Matte Dark + Neon Crimson & Electric Emerald Accents
+   Commercial Grade Commercial Product Foundations
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
@@ -19,34 +19,34 @@
   --spacing-12: 96px;
 
   /* --- COLOR SYSTEM --- */
-  /* Backgrounds */
-  --bg-primary: #0A0A0C;
-  --bg-secondary: #111114;
-  --bg-surface: #111114;
-  --bg-card: #161619;
-  --bg-card-hover: #1E1E22;
-  --bg-input: #131316;
-  --bg-input-focus: #1A1A1E;
-  --bg-modal: #111114;
-  --bg-hover: #1C1C20;
-  --bg-selected: rgba(229, 9, 20, 0.12);
+  /* Deep Obsidian Backgrounds */
+  --bg-primary: #07070A;
+  --bg-secondary: #0E0E14;
+  --bg-surface: rgba(14, 14, 20, 0.75);
+  --bg-card: rgba(18, 18, 25, 0.80);
+  --bg-card-hover: rgba(26, 26, 36, 0.90);
+  --bg-input: #0D0D12;
+  --bg-input-focus: #14141C;
+  --bg-modal: #0F0F16;
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-selected: rgba(229, 9, 20, 0.15);
 
-  /* Text */
-  --text-primary: #F4F4F5;
-  --text-secondary: #A1A1AA;
-  --text-tertiary: #71717A;
-  --text-inverse: #0A0A0C;
+  /* Premium Typography Colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0B2;
+  --text-tertiary: #6E6E82;
+  --text-inverse: #07070A;
 
-  /* Signature Crimson Red & Warm Gold */
+  /* Signature Neon Crimson Red & Radiant Accents */
   --accent-red: #E50914;
   --accent-red-hover: #FF1E27;
   --accent-primary: #E50914;
   --accent-primary-hover: #FF1E27;
-  --accent-secondary: #F5B700;
-  --accent-secondary-hover: #FFC933;
+  --accent-secondary: #F59E0B;
+  --accent-secondary-hover: #FBBF24;
 
-  /* Multi-tone Palette */
-  --accent-gold: #F5B700;
+  /* Multi-tone Vibrant Palette */
+  --accent-gold: #F59E0B;
   --accent-emerald: #10B981;
   --accent-indigo: #6366F1;
   --accent-purple: #8B5CF6;
@@ -54,26 +54,27 @@
   --accent-amber: #F59E0B;
   --accent-cyan: #06B6D4;
 
-  /* Gradients */
+  /* Premium Glowing Gradients */
   --accent-gradient-red: linear-gradient(135deg, #E50914 0%, #B91C2D 100%);
-  --accent-gradient-primary: linear-gradient(135deg, #E50914 0%, #B91C2D 100%);
-  --accent-gradient-gold: linear-gradient(135deg, #F5B700 0%, #D97706 100%);
+  --accent-gradient-primary: linear-gradient(135deg, #E50914 0%, #990610 100%);
+  --accent-gradient-gold: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
   --accent-gradient-emerald: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  --accent-gradient-purple: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
 
   /* Semantics */
   --color-success: #10B981;
-  --color-warning: #F5B700;
+  --color-warning: #F59E0B;
   --color-danger: #EF4444;
   --color-info: #3B82F6;
 
-  /* Borders */
-  --border-subtle: #1E1E22;
-  --border-medium: #2A2A30;
+  /* Glassmorphism Borders */
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-medium: rgba(255, 255, 255, 0.12);
   --border-focus: #E50914;
 
   /* --- TYPOGRAPHY --- */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --text-xs: 0.75rem;
@@ -86,7 +87,7 @@
   --text-4xl: 2.25rem;
   --text-5xl: 3rem;
 
-  --line-height-tight: 1.25;
+  --line-height-tight: 1.2;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
 
@@ -98,22 +99,22 @@
   --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* --- ELEVATION --- */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 16px 48px -8px rgba(0, 0, 0, 0.65);
+  /* --- ELEVATION & SHADOWS --- */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.65);
+  --shadow-lg: 0 20px 60px -10px rgba(0, 0, 0, 0.85);
+  --shadow-glow: 0 0 25px rgba(229, 9, 20, 0.35);
   --shadow-focus: 0 0 0 3px rgba(229, 9, 20, 0.3);
 
   /* --- ANIMATION EASINGS --- */
   --ease-natural: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --transition-fast: 0.15s var(--ease-natural);
   --transition-normal: 0.25s var(--ease-natural);
   --transition-slow: 0.4s var(--ease-natural);
 
   /* --- LAYOUT --- */
   --sidebar-expanded: 240px;
-  --header-height: 56px;
+  --header-height: 58px;
 }
